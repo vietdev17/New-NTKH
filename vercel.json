@@ -1,5 +1,5 @@
 {
-  "rootDirectory": "",
-  "buildCommand": "npm run build --workspace=apps/fe",
-  "outputDirectory": "apps/fe/.next"
+  "buildCommand": "npm install --workspace=apps/fe --include=dev && npm run build --workspace=apps/fe",
+  "outputDirectory": "apps/fe/.next",
+  "framework": null
 }
