@@ -18,8 +18,9 @@ export default () => ({
   googleDrive: {
     redirectUri: process.env.GOOGLE_DRIVE_REDIRECT_URI,
     folderId: process.env.GOOGLE_DRIVE_FOLDER_ID,
-    clientEmail: process.env.GOOGLE_DRIVE_CLIENT_EMAIL,
-    privateKey: process.env.GOOGLE_DRIVE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+    clientId: process.env.GOOGLE_DRIVE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_DRIVE_CLIENT_SECRET,
+    refreshToken: process.env.GOOGLE_DRIVE_REFRESH_TOKEN,
   },
   frontend: {
     url: process.env.FRONTEND_URL || 'http://localhost:3000',

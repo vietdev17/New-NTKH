@@ -177,8 +177,12 @@ export class ProductsService {
   // FIND BY SLUG - Chi tiet san pham (public)
   // ============================================================
   async findBySlug(slug: string): Promise<ProductDocument> {
+    const query = Types.ObjectId.isValid(slug)
+      ? { $or: [{ _id: slug }, { slug }], isDeleted: false }
+      : { slug, isDeleted: false };
+
     const product = await this.productModel
-      .findOne({ slug, isDeleted: false })
+      .findOne(query)
       .populate('categoryId', 'name slug image')
       .lean();
 

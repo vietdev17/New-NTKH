@@ -16,6 +16,7 @@ export interface DriveUploadResult {
 
 @Injectable()
 export class GoogleDriveService {
+  private oauth2Client: any;
   private drive: drive_v3.Drive;
   private readonly logger = new Logger(GoogleDriveService.name);
   private readonly rootFolderId: string;
@@ -35,25 +36,24 @@ export class GoogleDriveService {
   private folderIdCache: Map<string, string> = new Map();
 
   constructor(private readonly configService: ConfigService) {
-    // Khoi tao Google Drive client voi Service Account
-    const auth = new google.auth.GoogleAuth({
-      credentials: {
-        client_email: this.configService.get<string>(
-          'GOOGLE_DRIVE_CLIENT_EMAIL',
-        ),
-        private_key: this.configService
-          .get<string>('GOOGLE_DRIVE_PRIVATE_KEY')
-          ?.replace(/\\n/g, '\n'), // Fix escaped newlines trong .env
-      },
-      scopes: ['https://www.googleapis.com/auth/drive'],
+    const clientId = this.configService.get<string>('googleDrive.clientId');
+    const clientSecret = this.configService.get<string>('googleDrive.clientSecret');
+    const redirectUri = this.configService.get<string>('googleDrive.redirectUri');
+    const refreshToken = this.configService.get<string>('googleDrive.refreshToken');
+
+    this.oauth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUri);
+    this.oauth2Client.setCredentials({ refresh_token: refreshToken });
+
+    this.oauth2Client.on('tokens', (tokens) => {
+      if (tokens.access_token) {
+        this.logger.log('Access token auto-refreshed');
+      }
     });
 
-    this.drive = google.drive({ version: 'v3', auth });
-    this.rootFolderId = this.configService.get<string>(
-      'GOOGLE_DRIVE_FOLDER_ID',
-    );
+    this.drive = google.drive({ version: 'v3', auth: this.oauth2Client });
+    this.rootFolderId = this.configService.get<string>('googleDrive.folderId');
 
-    this.logger.log('Google Drive service initialized');
+    this.logger.log('Google Drive OAuth2 service initialized');
   }
 
   // ===== UPLOAD FILE LEN GOOGLE DRIVE =====
@@ -104,7 +104,7 @@ export class GoogleDriveService {
       });
 
       // Tao URL truc tiep
-      const directUrl = `https://drive.google.com/uc?id=${fileId}&export=view`;
+      const directUrl = `https://lh3.googleusercontent.com/d/${fileId}`;
 
       this.logger.log(
         `Uploaded file: ${fileName} -> Drive ID: ${fileId}`,
@@ -158,7 +158,7 @@ export class GoogleDriveService {
     return {
       webViewUrl: `https://drive.google.com/file/d/${fileId}/view`,
       downloadUrl: `https://drive.google.com/uc?id=${fileId}&export=download`,
-      directUrl: `https://drive.google.com/uc?id=${fileId}&export=view`,
+      directUrl: `https://lh3.googleusercontent.com/d/${fileId}`,
     };
   }
 

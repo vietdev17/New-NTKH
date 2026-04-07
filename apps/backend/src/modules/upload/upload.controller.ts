@@ -49,7 +49,7 @@ export class UploadController {
         originalName: data.originalName,
         mimeType: data.mimeType,
         size: data.size,
-        url: `https://drive.google.com/uc?id=${data.googleDriveFileId}&export=view`,
+        url: `https://lh3.googleusercontent.com/d/${data.googleDriveFileId}`,
         googleDriveFileId: data.googleDriveFileId,
         category: data.category,
       },
@@ -77,7 +77,7 @@ export class UploadController {
       originalName: file.originalName,
       mimeType: file.mimeType,
       size: file.size,
-      url: `https://drive.google.com/uc?id=${file.googleDriveFileId}&export=view`,
+      url: `https://lh3.googleusercontent.com/d/${file.googleDriveFileId}`,
       googleDriveFileId: file.googleDriveFileId,
       category: file.category,
     }));
@@ -107,7 +107,7 @@ export class UploadController {
       message: 'Upload avatar thanh cong',
       data: {
         _id: data._id,
-        url: `https://drive.google.com/uc?id=${data.googleDriveFileId}&export=view`,
+        url: `https://lh3.googleusercontent.com/d/${data.googleDriveFileId}`,
         googleDriveFileId: data.googleDriveFileId,
       },
     };
@@ -132,7 +132,7 @@ export class UploadController {
       message: 'Upload anh chung minh giao hang thanh cong',
       data: {
         _id: data._id,
-        url: `https://drive.google.com/uc?id=${data.googleDriveFileId}&export=view`,
+        url: `https://lh3.googleusercontent.com/d/${data.googleDriveFileId}`,
         googleDriveFileId: data.googleDriveFileId,
       },
     };
@@ -157,7 +157,7 @@ export class UploadController {
       message: 'Upload anh danh gia thanh cong',
       data: {
         _id: data._id,
-        url: `https://drive.google.com/uc?id=${data.googleDriveFileId}&export=view`,
+        url: `https://lh3.googleusercontent.com/d/${data.googleDriveFileId}`,
         googleDriveFileId: data.googleDriveFileId,
       },
     };
@@ -182,7 +182,7 @@ export class UploadController {
       message: 'Upload banner thanh cong',
       data: {
         _id: data._id,
-        url: `https://drive.google.com/uc?id=${data.googleDriveFileId}&export=view`,
+        url: `https://lh3.googleusercontent.com/d/${data.googleDriveFileId}`,
         googleDriveFileId: data.googleDriveFileId,
         category: data.category,
       },

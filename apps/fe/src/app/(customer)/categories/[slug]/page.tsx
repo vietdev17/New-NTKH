@@ -49,8 +49,22 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
+async function getProducts(categorySlug: string) {
+  try {
+    const res = await fetch(`${API_URL}/products?category=${categorySlug}&limit=20`, { next: { revalidate: 3600 } });
+    if (!res.ok) return [];
+    const json = await res.json();
+    return json.data || [];
+  } catch {
+    return [];
+  }
+}
+
 export default async function CategoryPage({ params }: { params: { slug: string } }) {
-  const cat = await getCategory(params.slug);
+  const [cat, products] = await Promise.all([
+    getCategory(params.slug),
+    getProducts(params.slug),
+  ]);
 
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
@@ -62,12 +76,33 @@ export default async function CategoryPage({ params }: { params: { slug: string 
     ],
   };
 
+  // ItemList schema — giúp Google hiểu đây là trang danh sách, không phải trang sản phẩm đơn lẻ
+  const itemListSchema = products.length > 0
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        name: cat?.name || 'Danh mục sản phẩm',
+        numberOfItems: products.length,
+        itemListElement: products.map((p: any, i: number) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          url: `${SITE_URL}/products/${p.slug}`,
+        })),
+      }
+    : null;
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
+      {itemListSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
+        />
+      )}
       <CategoryClient />
     </>
   );

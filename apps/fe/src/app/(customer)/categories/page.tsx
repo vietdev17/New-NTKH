@@ -1,128 +1,47 @@
-'use client';
-import Link from 'next/link';
-import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { ChevronRight, Package } from 'lucide-react';
-import { useCategoryTree } from '@/hooks/use-categories';
-import { LoadingSpinner } from '@/components/shared/loading-spinner';
-import type { Category } from '@/types';
+import type { Metadata } from 'next';
+import { STORE } from '@/lib/store-info';
+import CategoriesClient from './categories-client';
 
-function CategoryCard({ category, index }: { category: Category; index: number }) {
-  const hasChildren = category.children && category.children.length > 0;
+const SITE_URL = STORE.url;
+const SITE_NAME = STORE.name;
 
+const title = `Danh Mục Sản Phẩm Nội Thất - ${SITE_NAME}`;
+const description = `Khám phá các danh mục nội thất đa dạng tại ${SITE_NAME}, ${STORE.city} ${STORE.province}. ${STORE.categories.join(', ')}. Giá tốt, giao hàng toàn quốc.`;
+const url = `${SITE_URL}/categories`;
+
+export const metadata: Metadata = {
+  title,
+  description,
+  openGraph: {
+    title,
+    description,
+    url,
+    siteName: SITE_NAME,
+    locale: 'vi_VN',
+    type: 'website',
+    images: [{ url: STORE.ogImage, width: 1200, height: 630, alt: title }],
+  },
+  twitter: { card: 'summary_large_image', title, description },
+  alternates: { canonical: url },
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Trang chủ', item: SITE_URL },
+    { '@type': 'ListItem', position: 2, name: 'Danh mục', item: url },
+  ],
+};
+
+export default function Page() {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05 }}
-      className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-card transition-shadow"
-    >
-      {/* Parent category header */}
-      <Link href={`/categories/${category.slug}`} className="group block p-5">
-        <div className="flex items-center gap-4">
-          {category.image ? (
-            <Image
-              src={category.image}
-              alt={category.name}
-              width={64}
-              height={64}
-              className="rounded-xl object-cover shrink-0"
-              unoptimized
-            />
-          ) : (
-            <span className="w-16 h-16 rounded-xl bg-primary-100 flex items-center justify-center text-2xl font-bold text-primary-600 shrink-0">
-              {category.name.charAt(0)}
-            </span>
-          )}
-          <div className="flex-1 min-w-0">
-            <h2 className="text-lg font-bold text-gray-900 group-hover:text-primary-600 transition-colors">
-              {category.name}
-            </h2>
-            {category.description && (
-              <p className="text-sm text-gray-500 mt-0.5 line-clamp-1">{category.description}</p>
-            )}
-            <div className="flex items-center gap-3 mt-1.5 text-xs text-gray-400">
-              {category.productCount > 0 && (
-                <span className="flex items-center gap-1">
-                  <Package className="h-3 w-3" /> {category.productCount} san pham
-                </span>
-              )}
-              {hasChildren && (
-                <span>{category.children!.length} danh muc con</span>
-              )}
-            </div>
-          </div>
-          <ChevronRight className="h-5 w-5 text-gray-300 group-hover:text-primary-500 transition-colors shrink-0" />
-        </div>
-      </Link>
-
-      {/* Children */}
-      {hasChildren && (
-        <div className="border-t border-gray-50 px-5 py-3 bg-gray-50/50">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {category.children!.map((child) => (
-              <Link
-                key={child._id}
-                href={`/categories/${child.slug}`}
-                className="group/child flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white hover:shadow-sm transition-all text-sm"
-              >
-                {child.image ? (
-                  <Image
-                    src={child.image}
-                    alt={child.name}
-                    width={28}
-                    height={28}
-                    className="rounded object-cover shrink-0"
-                    unoptimized
-                  />
-                ) : (
-                  <span className="w-7 h-7 rounded bg-primary-100 flex items-center justify-center text-xs text-primary-600 shrink-0">
-                    {child.name.charAt(0)}
-                  </span>
-                )}
-                <span className="text-gray-700 group-hover/child:text-primary-600 truncate">
-                  {child.name}
-                </span>
-                {child.productCount > 0 && (
-                  <span className="ml-auto text-xs text-gray-400 shrink-0">{child.productCount}</span>
-                )}
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-    </motion.div>
-  );
-}
-
-export default function CategoriesPage() {
-  const { data: categories, isLoading } = useCategoryTree();
-  const tree = Array.isArray(categories) ? categories : [];
-
-  return (
-    <div className="container-custom py-8">
-      <div className="mb-8">
-        <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">Danh Muc San Pham</h1>
-        <p className="text-gray-500 mt-1">
-          Kham pha bo suu tap noi that da dang theo tung danh muc
-        </p>
-      </div>
-
-      {isLoading ? (
-        <div className="flex justify-center py-20">
-          <LoadingSpinner />
-        </div>
-      ) : tree.length === 0 ? (
-        <div className="text-center py-20 text-gray-500">
-          Chua co danh muc nao.
-        </div>
-      ) : (
-        <div className="grid gap-4 md:gap-6">
-          {tree.map((cat, i) => (
-            <CategoryCard key={cat._id} category={cat} index={i} />
-          ))}
-        </div>
-      )}
-    </div>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <CategoriesClient />
+    </>
   );
 }
