@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: defaultTitle, template: `%s | ${SITE_NAME}` },
   description: STORE.description,
-  keywords: STORE.keywords,
+  keywords: [...STORE.keywords],
   authors: [{ name: SITE_NAME, url: SITE_URL }],
   creator: SITE_NAME,
   publisher: SITE_NAME,
