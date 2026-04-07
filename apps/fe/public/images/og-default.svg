@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B4513"/>
+      <stop offset="100%" style="stop-color:#5C2D0A"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.15"/>
+      <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:0.05"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Decorative circles -->
+  <circle cx="1050" cy="80" r="200" fill="rgba(255,255,255,0.05)"/>
+  <circle cx="150" cy="580" r="250" fill="rgba(255,255,255,0.04)"/>
+
+  <!-- Logo block (top left) -->
+  <!-- Icon square -->
+  <rect x="60" y="50" width="80" height="80" rx="18" fill="rgba(255,255,255,0.15)"/>
+  <!-- Sofa icon -->
+  <rect x="72" y="68" width="22" height="26" rx="5" fill="white" opacity="0.95"/>
+  <rect x="98" y="68" width="22" height="26" rx="5" fill="white" opacity="0.95"/>
+  <rect x="70" y="92" width="56" height="20" rx="5" fill="white"/>
+  <rect x="76" y="112" width="6" height="10" rx="3" fill="rgba(255,255,255,0.7)"/>
+  <rect x="110" y="112" width="6" height="10" rx="3" fill="rgba(255,255,255,0.7)"/>
+
+  <!-- Store name -->
+  <text x="160" y="88" font-family="Georgia, serif" font-size="24" font-weight="700" fill="rgba(255,255,255,0.7)" letter-spacing="4">NỘI THẤT</text>
+  <text x="160" y="118" font-family="Georgia, serif" font-size="36" font-weight="700" fill="white">Khánh Huyền</text>
+
+  <!-- Location tagline -->
+  <text x="163" y="140" font-family="Arial, sans-serif" font-size="12" letter-spacing="3" fill="rgba(255,255,255,0.5)">ĐỒNG XOÀI • BÌNH PHƯỚC</text>
+
+  <!-- Main headline -->
+  <text x="600" y="340" font-family="Georgia, serif" font-size="72" font-weight="700" fill="white" text-anchor="middle">Nội Thất</text>
+  <text x="600" y="430" font-family="Georgia, serif" font-size="72" font-weight="700" fill="white" text-anchor="middle">Chất Lượng Cao</text>
+
+  <!-- Sub tagline -->
+  <text x="600" y="490" font-family="Arial, sans-serif" font-size="24" fill="rgba(255,255,255,0.7)" text-anchor="middle" letter-spacing="2">GIAO HÀNG TOÀN QUỐC • MIỄN PHÍ VẬN CHUYỂN</text>
+
+  <!-- Product categories row (bottom) -->
+  <rect x="140" y="540" width="160" height="40" rx="8" fill="url(#card)"/>
+  <text x="220" y="565" font-family="Arial, sans-serif" font-size="14" fill="white" text-anchor="middle">Nội thất gỗ</text>
+
+  <rect x="320" y="540" width="180" height="40" rx="8" fill="url(#card)"/>
+  <text x="410" y="565" font-family="Arial, sans-serif" font-size="14" fill="white" text-anchor="middle">Nhựa giả mây</text>
+
+  <rect x="520" y="540" width="180" height="40" rx="8" fill="url(#card)"/>
+  <text x="610" y="565" font-family="Arial, sans-serif" font-size="14" fill="white" text-anchor="middle">Ga chăn gối đệm</text>
+
+  <rect x="720" y="540" width="160" height="40" rx="8" fill="url(#card)"/>
+  <text x="800" y="565" font-family="Arial, sans-serif" font-size="14" fill="white" text-anchor="middle">Bàn trang điểm</text>
+
+  <rect x="900" y="540" width="160" height="40" rx="8" fill="url(#card)"/>
+  <text x="980" y="565" font-family="Arial, sans-serif" font-size="14" fill="white" text-anchor="middle">Combo phòng ngủ</text>
+
+  <!-- Domain -->
+  <text x="600" y="620" font-family="Arial, sans-serif" font-size="18" fill="rgba(255,255,255,0.4)" text-anchor="middle">noithatkhanhhuyen.com</text>
+</svg>

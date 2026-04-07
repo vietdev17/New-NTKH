@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -20,6 +21,7 @@ import { NotificationBell } from '@/components/shared/notification-bell';
 import { CategoryMegaMenu } from '@/components/customer/category-mega-menu';
 import { MobileCategoryTree } from '@/components/customer/category-tree-sidebar';
 import { useMounted } from '@/hooks/use-mounted';
+import { STORE } from '@/lib/store-info';
 import { getInitials } from '@/lib/utils';
 import { CUSTOMER_NAV_ITEMS } from '@/lib/constants';
 import { cn } from '@/lib/utils';
@@ -79,10 +81,12 @@ export function CustomerHeader() {
         {/* Promo bar */}
         <div className="hidden lg:block bg-primary-500">
           <div className="container-custom flex h-8 items-center justify-between text-xs text-white/90">
-            <span>🚚 Miễn phí vận chuyển cho đơn hàng từ 2.000.000đ</span>
+            <span>🚚 Miễn phí vận chuyển trong bán kính 150km</span>
             <div className="flex items-center gap-6">
               <Link href="/orders" className="hover:text-white transition-colors">Tra cứu đơn hàng</Link>
-              <span>Hotline: 1900 xxxx</span>
+              {STORE.phone && (
+                <a href={`tel:${STORE.phone.replace(/\s/g, '')}`}>Hotline: {STORE.phone}</a>
+              )}
             </div>
           </div>
         </div>
@@ -97,13 +101,14 @@ export function CustomerHeader() {
           </button>
 
           <Link href="/" className="flex items-center gap-2 shrink-0">
-            <div className="h-10 w-10 rounded-xl bg-primary-500 flex items-center justify-center shadow-sm">
-              <span className="text-white font-bold text-lg">F</span>
-            </div>
-            <div className="hidden sm:block">
-              <span className="text-xl font-bold text-primary-500">Furniture</span>
-              <span className="text-xl font-bold text-secondary-500"> VN</span>
-            </div>
+            <Image
+              src={STORE.logo}
+              alt={`${STORE.name} logo`}
+              width={160}
+              height={40}
+              className="h-10 w-auto object-contain"
+              unoptimized
+            />
           </Link>
 
           <nav className="hidden lg:flex items-center gap-1">
@@ -307,10 +312,14 @@ export function CustomerHeader() {
             >
               <div className="flex items-center justify-between p-4 border-b">
                 <Link href="/" className="flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
-                  <div className="h-8 w-8 rounded-lg bg-primary-500 flex items-center justify-center">
-                    <span className="text-white font-bold">F</span>
-                  </div>
-                  <span className="text-lg font-bold text-primary-500">Furniture VN</span>
+                  <Image
+                    src={STORE.logo}
+                    alt={`${STORE.name} logo`}
+                    width={140}
+                    height={35}
+                    className="h-9 w-auto object-contain"
+                    unoptimized
+                  />
                 </Link>
                 <button onClick={() => setMobileMenuOpen(false)} className="rounded-lg p-2 hover:bg-gray-100">
                   <X className="h-5 w-5" />

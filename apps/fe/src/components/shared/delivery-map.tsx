@@ -8,8 +8,8 @@ import 'leaflet/dist/leaflet.css';
 
 import type { LatLngExpression } from 'leaflet';
 
-// Default center: Ho Chi Minh City
-const DEFAULT_CENTER: LatLngExpression = [10.8231, 106.6297];
+// Default center: Đồng Xoài, Bình Phước
+const DEFAULT_CENTER: LatLngExpression = [11.5346, 106.9174];
 const DEFAULT_ZOOM = 13;
 
 interface MarkerData {

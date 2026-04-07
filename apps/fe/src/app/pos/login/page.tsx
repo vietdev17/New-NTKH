@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, Monitor } from 'lucide-react';
+import { STORE } from '@/lib/store-info';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -95,7 +96,7 @@ export default function PosLoginPage() {
         </div>
 
         <p className="text-center text-xs text-white/50 mt-6">
-          Furniture VN &copy; {new Date().getFullYear()} — Point of Sale
+          {STORE.name} &copy; {new Date().getFullYear()} — Point of Sale
         </p>
       </div>
     </div>

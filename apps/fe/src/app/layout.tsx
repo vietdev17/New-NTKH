@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
+import { STORE } from '@/lib/store-info';
 
 const inter = Inter({
   subsets: ['latin', 'vietnamese'],
@@ -9,11 +10,46 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
+const SITE_URL = STORE.url;
+const SITE_NAME = STORE.name;
+
+const defaultTitle = `${SITE_NAME} - Nội Thất Giá Tốt Tại ${STORE.city} ${STORE.province}`;
+
 export const metadata: Metadata = {
-  title: { default: 'Furniture VN - Noi That Chat Luong', template: '%s | Furniture VN' },
-  description: 'He thong thuong mai dien tu noi that hang dau Viet Nam. Mua sam noi that online voi gia tot nhat, giao hang tan noi.',
-  keywords: ['noi that', 'furniture', 'mua noi that online', 'ban ghe', 'giuong tu', 'trang tri nha cua'],
-  openGraph: { type: 'website', locale: 'vi_VN', siteName: 'Furniture VN' },
+  metadataBase: new URL(SITE_URL),
+  title: { default: defaultTitle, template: `%s | ${SITE_NAME}` },
+  description: STORE.description,
+  keywords: STORE.keywords,
+  authors: [{ name: SITE_NAME, url: SITE_URL }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  openGraph: {
+    type: 'website',
+    locale: 'vi_VN',
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: defaultTitle,
+    description: STORE.description,
+    images: [{ url: STORE.ogImage, width: 1200, height: 630, alt: defaultTitle }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: defaultTitle,
+    description: STORE.description,
+    images: [STORE.ogImage],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
+  },
+  alternates: { canonical: SITE_URL },
 };
 
 export const viewport: Viewport = {
@@ -23,9 +59,73 @@ export const viewport: Viewport = {
   themeColor: '#8B4513',
 };
 
+// JSON-LD: FurnitureStore (Local Business — rất quan trọng cho Google Maps & local search)
+const localBusinessSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FurnitureStore',
+  name: SITE_NAME,
+  url: SITE_URL,
+  logo: {
+    '@type': 'ImageObject',
+    url: `${SITE_URL}/images/logo.png`,
+    width: 200,
+    height: 60,
+  },
+  image: `${SITE_URL}${STORE.ogImage}`,
+  description: STORE.description,
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: STORE.city,
+    addressRegion: STORE.province,
+    addressCountry: STORE.countryCode,
+  },
+  areaServed: [
+    { '@type': 'State', name: STORE.province },
+    { '@type': 'Country', name: STORE.country },
+  ],
+  priceRange: '₫₫',
+  currenciesAccepted: 'VND',
+  paymentAccepted: 'Tiền mặt, Chuyển khoản',
+  hasOfferCatalog: {
+    '@type': 'OfferCatalog',
+    name: 'Danh mục nội thất',
+    itemListElement: STORE.categories.map((cat) => ({
+      '@type': 'Offer',
+      itemOffered: { '@type': 'Product', name: cat },
+    })),
+  },
+};
+
+// JSON-LD: WebSite (Google Sitelinks Search Box)
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: SITE_NAME,
+  url: SITE_URL,
+  inLanguage: 'vi-VN',
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: `${SITE_URL}/search?q={search_term_string}`,
+    },
+    'query-input': 'required name=search_term_string',
+  },
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="vi" className={inter.variable}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
+      </head>
       <body className="font-sans antialiased">
         <Providers>{children}</Providers>
       </body>

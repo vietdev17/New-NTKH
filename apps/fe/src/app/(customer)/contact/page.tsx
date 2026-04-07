@@ -7,12 +7,13 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+import { STORE } from '@/lib/store-info';
 
 const CONTACT_INFO = [
-  { icon: Phone, label: 'Hotline', value: '1900 1234', href: 'tel:19001234' },
-  { icon: Mail, label: 'Email', value: 'support@furniture.vn', href: 'mailto:support@furniture.vn' },
-  { icon: MapPin, label: 'Dia chi', value: '123 Nguyen Van Linh, Q.7, TP.HCM' },
-  { icon: Clock, label: 'Gio lam viec', value: 'T2 - CN: 8:00 - 21:00' },
+  { icon: Phone, label: 'Hotline', value: STORE.phone || '039 465 5656', href: `tel:${(STORE.phone || '').replace(/\s/g, '')}` },
+  { icon: Mail, label: 'Email', value: STORE.email || 'nguyenngochuyen27031998@gmail.com', href: `mailto:${STORE.email || ''}` },
+  { icon: MapPin, label: 'Địa chỉ', value: STORE.address },
+  { icon: Clock, label: 'Giờ làm việc', value: 'T2 - CN: 8:00 - 21:00' },
 ];
 
 export default function ContactPage() {

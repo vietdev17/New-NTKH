@@ -1,0 +1,36 @@
+# Nội Thất Khánh Huyền
+
+## Giới thiệu
+
+Nội Thất Khánh Huyền là cửa hàng nội thất uy tín tại Đồng Xoài, Bình Phước, chuyên cung cấp các sản phẩm nội thất đa dạng với giá tốt nhất thị trường và giao hàng toàn quốc.
+
+## Danh mục sản phẩm chính
+
+- Nội thất gỗ: giường ngủ, tủ quần áo, bàn ăn, bàn học, kệ tủ
+- Nội thất nhựa / nhựa giả mây: bàn ghế ban công, ghế thư giãn
+- Ga giường, chăn gối, đệm ngủ: bộ ga gối, đệm lò xo, đệm mút
+- Bàn trang điểm: bàn phấn, gương trang điểm, ghế ngồi
+- Combo phòng ngủ: bộ phòng ngủ hoàn chỉnh, giường + tủ + bàn
+
+## Điểm mạnh
+
+- Giá cạnh tranh, cam kết giá tốt nhất thị trường
+- Giao hàng nhanh toàn quốc, miễn phí vận chuyển
+- Hàng chính hãng, chất lượng đảm bảo, có bảo hành
+- Đa dạng mẫu mã, hàng trăm sản phẩm để lựa chọn
+
+## Thông tin
+
+- Website: https://noithatkhanhhuyen.com
+- Địa chỉ: Đồng Xoài, Bình Phước, Việt Nam
+- Phục vụ: Toàn quốc
+- Ngôn ngữ: Tiếng Việt
+- Tiền tệ: VND
+
+## Liên kết
+
+- Trang chủ: /
+- Tất cả sản phẩm: /products
+- Danh mục: /categories
+- Liên hệ: /contact
+- Sitemap: /sitemap.xml

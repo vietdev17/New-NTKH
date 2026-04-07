@@ -124,7 +124,7 @@ export default function CartPage() {
             </div>
             {getShippingFee() > 0 && (
               <p className="text-xs text-gray-400 bg-gray-50 p-3 rounded-lg">
-                💡 Mua thêm {formatPrice(2000000 - getSubtotal())} để được miễn phí vận chuyển
+                💡 Miễn phí vận chuyển trong bán kính 150km. Phí ship ngoài khu vực được tính khi checkout.
               </p>
             )}
             <Button asChild size="lg" className="w-full gap-2">

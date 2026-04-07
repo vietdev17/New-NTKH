@@ -1,4 +1,5 @@
 import { Truck, Shield, RotateCcw, Headphones } from 'lucide-react';
+import { STORE } from '@/lib/store-info';
 
 const features = [
   {
@@ -32,8 +33,8 @@ export function WhyChooseUs() {
     <section className="py-12 lg:py-16 bg-surface-200">
       <div className="container-custom">
         <div className="text-center mb-10">
-          <h2 className="text-2xl lg:text-3xl font-bold text-gray-900">Tai Sao Chon Furniture VN?</h2>
-          <p className="mt-2 text-gray-500">Cam ket mang den trai nghiem mua sam tot nhat cho ban</p>
+          <h2 className="text-2xl lg:text-3xl font-bold text-gray-900">Tại Sao Chọn {STORE.name}?</h2>
+          <p className="mt-2 text-gray-500">Cam kết mang đến trải nghiệm mua sắm tốt nhất cho bạn</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((f) => {

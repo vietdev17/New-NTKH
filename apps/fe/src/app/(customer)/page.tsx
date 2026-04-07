@@ -1,10 +1,19 @@
 import type { Metadata } from 'next';
 import { HomePage } from '@/components/customer/home/home-page';
+import { STORE } from '@/lib/store-info';
+
+const SITE_URL = STORE.url;
 
 export const metadata: Metadata = {
-  title: 'Furniture VN - Noi That Chat Luong Cao',
-  description:
-    'Furniture VN cung cap noi that go tu nhien chat luong cao. Sofa, ban an, giuong ngu, tu quan ao voi thiet ke hien dai, gia tot nhat thi truong.',
+  title: `${STORE.name} - Nội Thất Giá Tốt Tại ${STORE.city} ${STORE.province}`,
+  description: STORE.description,
+  openGraph: {
+    title: `${STORE.name} - Nội Thất Giá Tốt Tại ${STORE.city} ${STORE.province}`,
+    description: STORE.description,
+    url: SITE_URL,
+    images: [{ url: STORE.ogImage, width: 1200, height: 630, alt: STORE.name }],
+  },
+  alternates: { canonical: SITE_URL },
 };
 
 export default function Page() {

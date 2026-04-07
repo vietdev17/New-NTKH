@@ -1,5 +1,7 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Phone, Mail, MapPin, Facebook, Instagram, Youtube } from 'lucide-react';
+import { STORE } from '@/lib/store-info';
 
 export function CustomerFooter() {
   return (
@@ -8,25 +10,30 @@ export function CustomerFooter() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="h-10 w-10 rounded-xl bg-primary-500 flex items-center justify-center">
-                <span className="text-white font-bold text-lg">F</span>
-              </div>
-              <div>
-                <span className="text-xl font-bold text-white">Furniture</span>
-                <span className="text-xl font-bold text-accent-300"> VN</span>
-              </div>
+              <Image
+                src={STORE.logoWhite}
+                alt={`${STORE.name} logo`}
+                width={160}
+                height={40}
+                className="h-10 w-auto object-contain"
+                unoptimized
+              />
             </div>
             <p className="text-sm leading-relaxed mb-6 text-gray-400">
-              Hệ thống nội thất chất lượng hàng đầu Việt Nam. Cam kết sản phẩm chính hãng, giá tốt nhất thị trường.
+              {STORE.description}
             </p>
             <div className="flex items-center gap-3">
+              {STORE.facebook && (
               <a
-                href="#"
+                href={STORE.facebook}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="rounded-full bg-gray-800 p-2.5 hover:bg-primary-500 transition-colors"
                 aria-label="Facebook"
               >
                 <Facebook className="h-4 w-4" />
               </a>
+              )}
               <a
                 href="#"
                 className="rounded-full bg-gray-800 p-2.5 hover:bg-primary-500 transition-colors"
@@ -87,16 +94,20 @@ export function CustomerFooter() {
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-3">
                 <MapPin className="h-4 w-4 mt-0.5 shrink-0 text-accent-300" />
-                <span>123 Nguyen Van Linh, Quan 7, TP. Ho Chi Minh</span>
+                <span>{STORE.address}</span>
               </li>
+              {STORE.phone && (
               <li className="flex items-center gap-3">
                 <Phone className="h-4 w-4 shrink-0 text-accent-300" />
-                <span>1900 xxxx (8:00 - 22:00)</span>
+                <a href={`tel:${STORE.phone.replace(/\s/g, '')}`} className="hover:text-white">{STORE.phone}</a>
               </li>
+              )}
+              {STORE.email && (
               <li className="flex items-center gap-3">
                 <Mail className="h-4 w-4 shrink-0 text-accent-300" />
-                <span>info@furniturevn.com</span>
+                <a href={`mailto:${STORE.email}`} className="hover:text-white">{STORE.email}</a>
               </li>
+              )}
             </ul>
 
             <div className="mt-6">
@@ -118,7 +129,7 @@ export function CustomerFooter() {
 
       <div className="border-t border-gray-800">
         <div className="container-custom flex flex-col sm:flex-row items-center justify-between py-4 text-xs text-gray-500 gap-2">
-          <span>&copy; {new Date().getFullYear()} Furniture VN. Tất cả quyền được bảo lưu.</span>
+          <span>{STORE.copyright}</span>
           <div className="flex items-center gap-4">
             <Link href="#" className="hover:text-gray-300 transition-colors">Điều khoản sử dụng</Link>
             <Link href="#" className="hover:text-gray-300 transition-colors">Bảo mật</Link>

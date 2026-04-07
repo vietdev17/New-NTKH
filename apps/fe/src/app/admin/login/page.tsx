@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, Shield } from 'lucide-react';
+import { STORE } from '@/lib/store-info';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -50,7 +51,7 @@ export default function AdminLoginPage() {
             <Shield className="h-8 w-8 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-white">Quan Tri He Thong</h1>
-          <p className="text-gray-400 mt-1">Dang nhap vao trang quan tri Furniture VN</p>
+          <p className="text-gray-400 mt-1">Đăng nhập vào trang quản trị {STORE.name}</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-2xl p-8">
@@ -95,7 +96,7 @@ export default function AdminLoginPage() {
         </div>
 
         <p className="text-center text-xs text-gray-500 mt-6">
-          Furniture VN &copy; {new Date().getFullYear()} — Admin Panel
+          {STORE.name} &copy; {new Date().getFullYear()} — Admin Panel
         </p>
       </div>
     </div>

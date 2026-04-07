@@ -67,9 +67,12 @@ export const useCartStore = create<CartState>()(
       removeCoupon: () => set({ couponCode: null, couponDiscount: 0 }),
 
       getSubtotal: () => get().items.reduce((sum, item) => sum + item.price * item.quantity, 0),
+      // Miễn phí vận chuyển trong bán kính 150km
+      // Phí ship ngoài 150km được tính khi nhập địa chỉ tại checkout
       getShippingFee: () => {
+        // TODO: sau khi có địa chỉ giao hàng, tính phí theo khoảng cách
         const subtotal = get().getSubtotal();
-        return subtotal >= 2000000 ? 0 : subtotal >= 500000 ? 30000 : 50000;
+        return subtotal >= 500000 ? 30000 : 50000;
       },
       getTotal: () => get().getSubtotal() + get().getShippingFee() - get().couponDiscount,
       getItemCount: () => get().items.reduce((sum, item) => sum + item.quantity, 0),

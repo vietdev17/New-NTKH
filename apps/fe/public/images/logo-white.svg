@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 72" width="300" height="72">
+  <!-- Icon: rounded square background (lighter for dark bg) -->
+  <rect x="0" y="4" width="64" height="64" rx="14" fill="rgba(255,255,255,0.2)"/>
+
+  <!-- Sofa icon (white) -->
+  <rect x="10" y="16" width="18" height="22" rx="4" fill="white" opacity="0.95"/>
+  <rect x="30" y="16" width="18" height="22" rx="4" fill="white" opacity="0.95"/>
+  <rect x="8" y="36" width="48" height="16" rx="4" fill="white"/>
+  <rect x="6" y="28" width="8" height="24" rx="4" fill="rgba(255,255,255,0.7)"/>
+  <rect x="50" y="28" width="8" height="24" rx="4" fill="rgba(255,255,255,0.7)"/>
+  <rect x="13" y="52" width="5" height="9" rx="2" fill="rgba(255,255,255,0.7)"/>
+  <rect x="46" y="52" width="5" height="9" rx="2" fill="rgba(255,255,255,0.7)"/>
+
+  <!-- Text: white version -->
+  <text
+    x="80" y="30"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="13"
+    font-weight="700"
+    letter-spacing="3"
+    fill="rgba(255,255,255,0.85)"
+  >NỘI THẤT</text>
+
+  <text
+    x="80" y="52"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="22"
+    font-weight="700"
+    fill="white"
+  >Khánh Huyền</text>
+
+  <text
+    x="81" y="66"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="8.5"
+    letter-spacing="1.8"
+    fill="rgba(255,255,255,0.6)"
+  >ĐỒNG XOÀI • BÌNH PHƯỚC</text>
+</svg>

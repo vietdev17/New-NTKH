@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
+import { STORE } from '@/lib/store-info';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -35,7 +36,7 @@ export default function LoginPage() {
             <span className="text-white font-bold text-2xl">F</span>
           </div>
           <h1 className="text-2xl font-bold text-gray-900">Dang Nhap</h1>
-          <p className="text-gray-500 mt-1">Chao mung ban tro lai voi Furniture VN</p>
+          <p className="text-gray-500 mt-1">Chào mừng bạn trở lại với {STORE.name}</p>
         </div>
 
         <div className="bg-white rounded-2xl border border-gray-100 shadow-card p-6 lg:p-8">
