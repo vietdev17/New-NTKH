@@ -1,0 +1,5 @@
+{
+  "buildCommand": "cd apps/fe && npm install && npm run build",
+  "outputDirectory": "apps/fe/.next",
+  "installCommand": "npm install"
+}
