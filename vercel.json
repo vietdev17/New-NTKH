@@ -1,6 +1,5 @@
 {
-  "projectName": "noithatkhanhhuyen",
-  "buildCommand": "cd apps/fe && npm install && npm run build",
-  "outputDirectory": "apps/fe/.next",
-  "installCommand": "npm install"
+  "rootDirectory": "",
+  "buildCommand": "npm run build --workspace=apps/fe",
+  "outputDirectory": "apps/fe/.next"
 }
