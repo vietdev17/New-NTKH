@@ -86,14 +86,6 @@ const localBusinessSchema = {
   priceRange: '₫₫',
   currenciesAccepted: 'VND',
   paymentAccepted: 'Tiền mặt, Chuyển khoản',
-  hasOfferCatalog: {
-    '@type': 'OfferCatalog',
-    name: 'Danh mục nội thất',
-    itemListElement: STORE.categories.map((cat) => ({
-      '@type': 'Offer',
-      itemOffered: { '@type': 'Product', name: cat },
-    })),
-  },
 };
 
 // JSON-LD: WebSite (Google Sitelinks Search Box)
