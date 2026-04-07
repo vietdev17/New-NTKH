@@ -9,9 +9,9 @@ import { Button } from '@/components/ui/button';
 const slides = [
   {
     id: 1,
-    title: 'Noi That Go Tu Nhien',
-    subtitle: 'Chat Luong Cao - Thiet Ke Hien Dai',
-    description: 'Kham pha bo suu tap noi that go tu nhien cao cap voi thiet ke toi gian, hien dai phu hop moi phong cach.',
+    title: 'Nội Thất Khánh Huyền',
+    subtitle: 'Nội Thất Khánh Huyền - Đồng Xoài, Bình Phước',
+    description: 'Khám phá bộ sưu tập nội thất gỗ tự nhiên cao cấp tại Nội Thất Khánh Huyền - noithatkhanhhuyen.com.',
     cta: 'Kham Pha Ngay',
     ctaHref: '/products',
     bg: 'from-primary-900 via-primary-800 to-primary-700',
@@ -20,8 +20,8 @@ const slides = [
   {
     id: 2,
     title: 'Sofa & Phong Khach',
-    subtitle: 'Tao Dieu Kien Song Thoai Mais',
-    description: 'Tu sofa goc, sofa don den ban tra va ke tivi - tat ca nhung gi ban can cho phong khach hoan hao.',
+    subtitle: 'Tạo Điều Kiện Sống Thoải Mái',
+    description: 'Từ sofa góc, sofa đơn đến bàn trà và kệ tivi - tất cả những gì bạn cần cho phòng khách hoàn hảo.',
     cta: 'Xem Sofa',
     ctaHref: '/products?category=sofa',
     bg: 'from-secondary-900 via-secondary-800 to-secondary-700',
@@ -30,8 +30,8 @@ const slides = [
   {
     id: 3,
     title: 'Phong Ngu Sang Trong',
-    subtitle: 'Giac Ngu Ngon - Don Gian Co May',
-    description: 'Bo giuong ngu, tu quan ao, ban trang diem - tao phong ngu mo uoc voi noi that cao cap.',
+    subtitle: 'Giấc Ngủ Ngon - Đơn Giản Có Mà',
+    description: 'Bộ giường ngủ, tủ quần áo, bàn trang điểm - tạo phòng ngủ mơ ước với nội thất cao cấp.',
     cta: 'Kham Pha Ngay',
     ctaHref: '/products?category=phong-ngu',
     bg: 'from-accent-700 via-accent-600 to-accent-500',
@@ -117,7 +117,7 @@ export function HeroBanner() {
                   <Link href={slide.ctaHref}>{slide.cta}</Link>
                 </Button>
                 <Button size="lg" variant="outline" asChild className="border-white text-white hover:bg-white/10">
-                  <Link href="/products">Xem Tat Ca</Link>
+                  <Link href="/products">Xem Tất Cả</Link>
                 </Button>
               </motion.div>
             </div>

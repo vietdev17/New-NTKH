@@ -17,7 +17,7 @@ export default function ReviewsPage() {
     <div className="container-custom py-6 lg:py-10 max-w-3xl">
       <div className="flex items-center gap-3 mb-6">
         <Star className="h-6 w-6 text-primary-500" />
-        <h1 className="text-2xl font-bold">Danh Gia Cua Toi</h1>
+        <h1 className="text-2xl font-bold">Đánh Giá Của Tôi</h1>
       </div>
 
       {isLoading ? (

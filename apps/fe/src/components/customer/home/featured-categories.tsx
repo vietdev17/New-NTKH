@@ -15,8 +15,8 @@ export function FeaturedCategories({ categories }: FeaturedCategoriesProps) {
     <section className="py-12 lg:py-16">
       <div className="container-custom">
         <div className="text-center mb-10">
-          <h2 className="text-2xl lg:text-3xl font-bold text-gray-900">Danh Muc Noi Bat</h2>
-          <p className="mt-2 text-gray-500">Kham pha cac danh muc noi that phu hop voi nhu cau cua ban</p>
+          <h2 className="text-2xl lg:text-3xl font-bold text-gray-900">Danh Mục Nổi Bật</h2>
+          <p className="mt-2 text-gray-500">Khám phá các danh mục nội thất phù hợp với nhu cầu của bạn</p>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
           {displayed.length > 0
@@ -46,7 +46,7 @@ export function FeaturedCategories({ categories }: FeaturedCategoriesProps) {
                         {cat.name}
                       </span>
                       {cat.productCount > 0 && (
-                        <span className="text-xs text-gray-400">{cat.productCount} san pham</span>
+                        <span className="text-xs text-gray-400">{cat.productCount} sản phẩm</span>
                       )}
                     </div>
                   </Link>

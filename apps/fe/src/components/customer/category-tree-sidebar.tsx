@@ -115,7 +115,7 @@ export function CategoryTreeSidebar({
 
   return (
     <div className="space-y-1">
-      <h3 className="font-semibold text-gray-900 text-sm mb-3 px-2">Danh Muc San Pham</h3>
+      <h3 className="font-semibold text-gray-900 text-sm mb-3 px-2">Danh Mục Sản Phẩm</h3>
       <Link
         href="/products"
         className={cn(
@@ -126,7 +126,7 @@ export function CategoryTreeSidebar({
         )}
       >
         <Folder className="h-4 w-4 text-gray-400" />
-        Tat ca san pham
+        Tất cả sản phẩm
       </Link>
       {tree.map((cat) => (
         <CategoryNode
@@ -153,7 +153,7 @@ export function MobileCategoryTree({ onNavigate }: { onNavigate?: () => void }) 
         onClick={() => setExpanded(!expanded)}
         className="flex items-center justify-between w-full px-4 py-2.5 text-sm font-semibold text-gray-900"
       >
-        Danh Muc
+        Danh Mục
         <ChevronDown className={cn('h-4 w-4 text-gray-500 transition-transform', expanded && 'rotate-180')} />
       </button>
       <AnimatePresence>
@@ -176,7 +176,7 @@ export function MobileCategoryTree({ onNavigate }: { onNavigate?: () => void }) 
               onClick={onNavigate}
               className="flex items-center gap-2 px-2 py-2 text-sm text-primary-600 font-medium hover:bg-primary-50 rounded-lg mt-1"
             >
-              Xem tat ca danh muc →
+              Xem tất cả danh mục →
             </Link>
           </motion.div>
         )}

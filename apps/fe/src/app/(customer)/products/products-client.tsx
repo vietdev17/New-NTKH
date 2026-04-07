@@ -46,10 +46,10 @@ export default function ProductsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6 gap-4">
         <div>
-          <h1 className="text-xl lg:text-2xl font-bold text-gray-900">Tat Ca San Pham</h1>
+          <h1 className="text-xl lg:text-2xl font-bold text-gray-900">Tất Cả Sản Phẩm</h1>
           {meta && (
             <p className="text-sm text-gray-500 mt-0.5">
-              Hien thi {products.length} / {meta.total} san pham
+              Hiển thị {products.length} / {meta.total} sản phẩm
             </p>
           )}
         </div>
@@ -61,7 +61,7 @@ export default function ProductsPage() {
             className="lg:hidden gap-2"
           >
             <SlidersHorizontal className="h-4 w-4" />
-            Bo loc
+            Bộ Lọc
           </Button>
           <Select value={sort} onValueChange={(v) => updateParam('sort', v)}>
             <SelectTrigger className="w-40 h-9 text-sm">
@@ -133,11 +133,12 @@ function ProductFilters({ onFilterChange, searchParams }: { onFilterChange: (key
 
   return (
     <div className="bg-white rounded-xl border border-gray-100 p-4 space-y-6 sticky top-24">
-      <h3 className="font-semibold text-gray-900">Bo Loc San Pham</h3>
+      <h3 className="font-semibold text-gray-900">Bộ Lọc Sản Phẩm</h3>
 
       {/* Price range */}
       <div>
-        <p className="text-sm font-medium text-gray-700 mb-3">Khoang Gia</p>
+        <p className="text-sm font-medium text-gray-700 mb-3">Khoảng Giá</p>
+
         <div className="flex gap-2 items-center">
           <input
             type="number"
@@ -160,10 +161,10 @@ function ProductFilters({ onFilterChange, searchParams }: { onFilterChange: (key
       {/* Quick price filters */}
       <div className="flex flex-wrap gap-2">
         {[
-          { label: 'Duoi 2tr', min: '', max: '2000000' },
+          { label: 'Dưới 2tr', min: '', max: '2000000' },
           { label: '2-5tr', min: '2000000', max: '5000000' },
           { label: '5-10tr', min: '5000000', max: '10000000' },
-          { label: 'Tren 10tr', min: '10000000', max: '' },
+          { label: 'Trên 10tr', min: '10000000', max: '' },
         ].map((r) => (
           <button
             key={r.label}
@@ -186,7 +187,7 @@ function ProductFilters({ onFilterChange, searchParams }: { onFilterChange: (key
         }}
         className="w-full text-sm text-danger-500 hover:text-danger-600 font-medium"
       >
-        Xoa tat ca bo loc
+        Xóa tất cả bộ lọc
       </button>
     </div>
   );

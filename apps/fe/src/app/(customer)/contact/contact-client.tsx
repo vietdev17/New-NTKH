@@ -23,7 +23,7 @@ export default function ContactPage() {
     e.preventDefault();
     setSending(true);
     await new Promise((r) => setTimeout(r, 1000));
-    toast.success('Da gui tin nhan! Chung toi se lien he lai ban som.');
+    toast.success('Đã gửi tin nhắn! Chúng tôi sẽ liên hệ lại bạn sớm.');
     (e.target as HTMLFormElement).reset();
     setSending(false);
   };
@@ -31,8 +31,8 @@ export default function ContactPage() {
   return (
     <div className="container-custom py-8 lg:py-12">
       <div className="text-center mb-10">
-        <h1 className="text-3xl font-bold text-gray-900">Lien He Voi Chung Toi</h1>
-        <p className="text-gray-500 mt-2">Ban can ho tro? Hay lien he voi chung toi qua cac kenh ben duoi</p>
+        <h1 className="text-3xl font-bold text-gray-900">Liên Hệ Với Chúng Tôi</h1>
+        <p className="text-gray-500 mt-2">Bạn cần hỗ trợ? Hãy liên hệ với chúng tôi qua các kênh bên dưới</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 max-w-5xl mx-auto">
@@ -70,11 +70,11 @@ export default function ContactPage() {
           transition={{ delay: 0.2 }}
           className="lg:col-span-3 bg-white rounded-xl border border-gray-100 shadow-card p-6"
         >
-          <h2 className="text-lg font-semibold mb-4">Gui Tin Nhan</h2>
+          <h2 className="text-lg font-semibold mb-4">Gửi Tin Nhắn</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label>Ho ten *</Label>
+                <Label>Họ tên *</Label>
                 <Input required placeholder="Nguyen Van A" />
               </div>
               <div className="space-y-1.5">
@@ -83,16 +83,16 @@ export default function ContactPage() {
               </div>
             </div>
             <div className="space-y-1.5">
-              <Label>So dien thoai</Label>
+              <Label>Số điện thoại</Label>
               <Input type="tel" placeholder="0912 345 678" />
             </div>
             <div className="space-y-1.5">
-              <Label>Noi dung *</Label>
-              <Textarea required rows={4} placeholder="Noi dung can ho tro..." />
+              <Label>Nội dung *</Label>
+              <Textarea required rows={4} placeholder="Nội dung cần hỗ trợ..." />
             </div>
             <Button type="submit" className="gap-2" disabled={sending}>
               <Send className="h-4 w-4" />
-              {sending ? 'Dang gui...' : 'Gui tin nhan'}
+              {sending ? 'Đang gửi...' : 'Gửi tin nhắn'}
             </Button>
           </form>
         </motion.div>

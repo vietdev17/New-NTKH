@@ -44,11 +44,11 @@ function CategoryCard({ category, index }: { category: Category; index: number }
             <div className="flex items-center gap-3 mt-1.5 text-xs text-gray-400">
               {category.productCount > 0 && (
                 <span className="flex items-center gap-1">
-                  <Package className="h-3 w-3" /> {category.productCount} san pham
+                  <Package className="h-3 w-3" /> {category.productCount} sản phẩm
                 </span>
               )}
               {hasChildren && (
-                <span>{category.children!.length} danh muc con</span>
+                <span>{category.children!.length} danh mục con</span>
               )}
             </div>
           </div>
@@ -102,9 +102,9 @@ export default function CategoriesPage() {
   return (
     <div className="container-custom py-8">
       <div className="mb-8">
-        <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">Danh Muc San Pham</h1>
+        <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">Danh Mục Sản Phẩm</h1>
         <p className="text-gray-500 mt-1">
-          Kham pha bo suu tap noi that da dang theo tung danh muc
+          Khám phá bộ sưu tập nội thất đa dạng theo từng danh mục
         </p>
       </div>
 
@@ -114,7 +114,7 @@ export default function CategoriesPage() {
         </div>
       ) : tree.length === 0 ? (
         <div className="text-center py-20 text-gray-500">
-          Chua co danh muc nao.
+          Chưa có danh mục nào.
         </div>
       ) : (
         <div className="grid gap-4 md:gap-6">

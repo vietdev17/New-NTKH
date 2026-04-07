@@ -34,7 +34,7 @@ export function ProductSection({ title, subtitle, products, viewAllHref, accent 
           </div>
           <Button variant="ghost" asChild className="hidden sm:inline-flex gap-1 text-gray-600 hover:text-primary-600">
             <Link href={viewAllHref}>
-              Xem tat ca <ArrowRight className="h-4 w-4" />
+              Xem tất cả <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
         </div>
@@ -62,7 +62,7 @@ export function ProductSection({ title, subtitle, products, viewAllHref, accent 
 
         <div className="mt-8 text-center sm:hidden">
           <Button variant="outline" asChild>
-            <Link href={viewAllHref}>Xem tat ca <ArrowRight className="ml-1 h-4 w-4" /></Link>
+            <Link href={viewAllHref}>Xem tất cả <ArrowRight className="ml-1 h-4 w-4" /></Link>
           </Button>
         </div>
       </div>

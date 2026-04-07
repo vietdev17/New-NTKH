@@ -49,6 +49,10 @@ export const metadata: Metadata = {
       'max-video-preview': -1,
     },
   },
+  icons: {
+    icon: '/images/logo.png',
+    apple: '/images/logo.png',
+  },
   alternates: { canonical: SITE_URL },
 };
 

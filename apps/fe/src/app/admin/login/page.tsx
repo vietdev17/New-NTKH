@@ -34,10 +34,10 @@ export default function AdminLoginPage() {
         return;
       }
       setAuth(res.user, res.accessToken, res.refreshToken);
-      toast.success('Dang nhap thanh cong!');
+      toast.success('Đăng nhập thành công!');
       window.location.href = '/admin';
     } catch (err: any) {
-      toast.error(err.message || 'Dang nhap that bai');
+      toast.error(err.message || 'Đăng nhập thất bại');
     } finally {
       setIsLoading(false);
     }
@@ -50,7 +50,7 @@ export default function AdminLoginPage() {
           <div className="inline-flex h-16 w-16 rounded-2xl bg-primary-500 items-center justify-center mb-4 shadow-lg">
             <Shield className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-white">Quan Tri He Thong</h1>
+          <h1 className="text-2xl font-bold text-white">Quản Trị Hệ Thống</h1>
           <p className="text-gray-400 mt-1">Đăng nhập vào trang quản trị {STORE.name}</p>
         </div>
 
@@ -69,12 +69,12 @@ export default function AdminLoginPage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="password">Mat khau</Label>
+              <Label htmlFor="password">Mật khẩu</Label>
               <div className="relative">
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Nhap mat khau"
+                  placeholder="Nhập mật khẩu"
                   {...register('password')}
                   className={errors.password ? 'border-danger-500 pr-10' : 'pr-10'}
                 />
@@ -90,7 +90,7 @@ export default function AdminLoginPage() {
             </div>
 
             <Button type="submit" className="w-full h-11" disabled={isLoading}>
-              {isLoading ? 'Dang dang nhap...' : 'Dang Nhap'}
+              {isLoading ? 'Đang đăng nhập...' : 'Đăng Nhập'}
             </Button>
           </form>
         </div>

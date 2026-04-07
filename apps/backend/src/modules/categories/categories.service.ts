@@ -80,8 +80,12 @@ export class CategoriesService {
     category: CategoryDocument;
     children: CategoryDocument[];
   }> {
+    const query = Types.ObjectId.isValid(slug)
+      ? { $or: [{ _id: slug }, { slug }] }
+      : { slug };
+
     const category = await this.categoryModel
-      .findOne({ slug })
+      .findOne(query)
       .lean();
 
     if (!category) {

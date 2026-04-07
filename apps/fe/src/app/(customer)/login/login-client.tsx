@@ -35,7 +35,7 @@ export default function LoginPage() {
           <div className="inline-flex h-14 w-14 rounded-2xl bg-primary-500 items-center justify-center mb-4 shadow-lg">
             <span className="text-white font-bold text-2xl">F</span>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Dang Nhap</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Đăng Nhập</h1>
           <p className="text-gray-500 mt-1">Chào mừng bạn trở lại với {STORE.name}</p>
         </div>
 
@@ -57,16 +57,16 @@ export default function LoginPage() {
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password">Mat khau</Label>
+                <Label htmlFor="password">Mật khẩu</Label>
                 <Link href="/forgot-password" className="text-xs text-primary-500 hover:underline">
-                  Quen mat khau?
+                  Quên mật khẩu?
                 </Link>
               </div>
               <div className="relative">
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Nhap mat khau"
+                  placeholder="Nhập mật khẩu"
                   {...register('password')}
                   className={errors.password ? 'border-danger-500 pr-10' : 'pr-10'}
                 />
@@ -84,14 +84,14 @@ export default function LoginPage() {
             </div>
 
             <Button type="submit" className="w-full h-11" disabled={isLoggingIn}>
-              {isLoggingIn ? 'Dang dang nhap...' : 'Dang Nhap'}
+              {isLoggingIn ? 'Đang đăng nhập...' : 'Đăng Nhập'}
             </Button>
           </form>
 
           <p className="text-center text-sm text-gray-500 mt-6">
-            Chua co tai khoan?{' '}
+            Chưa có tài khoản?{' '}
             <Link href="/register" className="text-primary-500 font-medium hover:underline">
-              Dang ky ngay
+              Đăng ký ngay
             </Link>
           </p>
         </div>

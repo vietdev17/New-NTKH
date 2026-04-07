@@ -27,7 +27,7 @@ export function CategoryMegaMenu() {
               className="flex items-center gap-2 px-3 py-2 mb-2 text-sm font-semibold text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
             >
               <Grid3X3 className="h-4 w-4" />
-              Tat Ca Danh Muc
+              Tất Cả Danh Mục
             </Link>
             {tree.map((cat) => (
               <Link
@@ -104,7 +104,7 @@ export function CategoryMegaMenu() {
                             {child.name}
                           </p>
                           {child.productCount > 0 && (
-                            <p className="text-xs text-gray-500">{child.productCount} san pham</p>
+                            <p className="text-xs text-gray-500">{child.productCount} sản phẩm</p>
                           )}
                         </div>
                       </Link>
@@ -119,7 +119,7 @@ export function CategoryMegaMenu() {
                   className="flex flex-col items-center justify-center py-8 text-center"
                 >
                   <p className="text-sm text-gray-500">
-                    Xem tat ca san pham trong{' '}
+                    Xem tất cả sản phẩm trong{' '}
                     <Link href={`/categories/${activeCategory.slug}`} className="text-primary-600 font-medium hover:underline">
                       {activeCategory.name}
                     </Link>
@@ -151,7 +151,7 @@ export function CategoryMegaMenu() {
                         {cat.name}
                       </p>
                       {cat.productCount > 0 && (
-                        <p className="text-xs text-gray-500 mt-0.5">{cat.productCount} san pham</p>
+                        <p className="text-xs text-gray-500 mt-0.5">{cat.productCount} sản phẩm</p>
                       )}
                     </Link>
                   ))}

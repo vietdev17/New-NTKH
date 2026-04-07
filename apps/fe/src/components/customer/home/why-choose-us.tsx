@@ -4,26 +4,26 @@ import { STORE } from '@/lib/store-info';
 const features = [
   {
     icon: Truck,
-    title: 'Giao Hang Tan Noi',
-    description: 'Mien phi van chuyen cho don hang tu 2 trieu. Giao hang nhanh trong 2-5 ngay lam viec.',
+    title: 'Giao Hàng Tận Nơi',
+    description: 'Miễn phí vận chuyển cho đơn hàng từ 2 triệu. Giao hàng nhanh trong 2-5 ngày làm việc.',
     color: 'bg-primary-50 text-primary-500',
   },
   {
     icon: Shield,
-    title: 'Bao Hanh Chinh Hang',
-    description: 'Tat ca san pham duoc bao hanh tu 12-36 thang. Cam ket san pham chinh hang 100%.',
+    title: 'Bảo Hành Chính Hãng',
+    description: 'Tất cả sản phẩm được bảo hành từ 12-36 tháng. Cam kết sản phẩm chính hãng 100%.',
     color: 'bg-secondary-50 text-secondary-500',
   },
   {
     icon: RotateCcw,
-    title: 'Doi Tra De Dang',
-    description: 'Doi tra hang trong vong 30 ngay neu san pham co loi. Thu tuc nhanh gon, don gian.',
+    title: 'Đổi Trả Dễ Dàng',
+    description: 'Đổi trả hàng trong vòng 30 ngày nếu sản phẩm có lỗi. Thủ tục nhanh gọn, đơn giản.',
     color: 'bg-accent-50 text-accent-500',
   },
   {
     icon: Headphones,
-    title: 'Ho Tro 24/7',
-    description: 'Doi ngu cham soc khach hang luon san sang tu van va ho tro ban bat cu luc nao.',
+    title: 'Hỗ Trợ 24/7',
+    description: 'Đội ngũ chăm sóc khách hàng luôn sẵn sàng tư vấn và hỗ trợ bạn bất cứ lúc nào.',
     color: 'bg-info-50 text-info-500',
   },
 ];

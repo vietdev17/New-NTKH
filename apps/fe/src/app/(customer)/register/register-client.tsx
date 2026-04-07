@@ -33,7 +33,7 @@ export default function RegisterPage() {
           <div className="inline-flex h-14 w-14 rounded-2xl bg-primary-500 items-center justify-center mb-4 shadow-lg">
             <span className="text-white font-bold text-2xl">F</span>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Tao Tai Khoan</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Tạo Tài Khoản</h1>
           <p className="text-gray-500 mt-1">Tham gia cùng {STORE.name} ngay hôm nay</p>
         </div>
 
@@ -52,13 +52,13 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label>So dien thoai</Label>
+              <Label>Số điện thoại</Label>
               <Input type="tel" placeholder="0912345678" {...register('phone')} className={errors.phone ? 'border-danger-500' : ''} />
               {errors.phone && <p className="text-xs text-danger-500">{errors.phone.message}</p>}
             </div>
 
             <div className="space-y-1.5">
-              <Label>Mat khau</Label>
+              <Label>Mật khẩu</Label>
               <div className="relative">
                 <Input
                   type={showPassword ? 'text' : 'password'}
@@ -74,20 +74,20 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label>Xac nhan mat khau</Label>
+              <Label>Xác nhận mật khẩu</Label>
               <Input type="password" placeholder="Nhap lai mat khau" {...register('confirmPassword')} className={errors.confirmPassword ? 'border-danger-500' : ''} />
               {errors.confirmPassword && <p className="text-xs text-danger-500">{errors.confirmPassword.message}</p>}
             </div>
 
             <Button type="submit" className="w-full h-11 mt-2" disabled={isRegistering}>
-              {isRegistering ? 'Dang tao tai khoan...' : 'Dang Ky'}
+              {isRegistering ? 'Đang tạo tài khoản...' : 'Đăng Ký'}
             </Button>
           </form>
 
           <p className="text-center text-sm text-gray-500 mt-6">
-            Da co tai khoan?{' '}
+            Đã có tài khoản?{' '}
             <Link href="/login" className="text-primary-500 font-medium hover:underline">
-              Dang nhap
+              Đăng nhập
             </Link>
           </p>
         </div>

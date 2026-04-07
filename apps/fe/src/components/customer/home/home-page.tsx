@@ -17,24 +17,24 @@ export function HomePage() {
       <HeroBanner />
       <FeaturedCategories categories={categories || []} />
       <ProductSection
-        title="San Pham Ban Chay"
-        subtitle="Nhung san pham duoc ua chuong nhat"
+        title="Sản Phẩm Bán Chạy"
+        subtitle="Những sản phẩm được ưa chuộng nhất"
         products={featuredProducts || []}
         viewAllHref="/products?sort=soldCount:desc"
         accent="primary"
       />
       <div className="bg-surface-100/80">
         <ProductSection
-          title="San Pham Moi"
-          subtitle="Nhung mau noi that moi nhat vua cap ben"
+          title="Sản Phẩm Mới"
+          subtitle="Những mẫu nội thất mới nhất vừa cập nhật"
           products={newArrivals || []}
           viewAllHref="/products?sort=createdAt:desc"
           accent="secondary"
         />
       </div>
       <ProductSection
-        title="Khuyen Mai Hot"
-        subtitle="Giam gia soc - so luong co han"
+        title="Khuyến Mãi Hot"
+        subtitle="Giảm giá sốc - số lượng có hạn"
         products={saleProducts || []}
         viewAllHref="/products?sale=true"
         accent="accent"

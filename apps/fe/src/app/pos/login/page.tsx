@@ -34,10 +34,10 @@ export default function PosLoginPage() {
         return;
       }
       setAuth(res.user, res.accessToken, res.refreshToken);
-      toast.success('Dang nhap thanh cong!');
+      toast.success('Đăng nhập thành công!');
       window.location.href = '/pos';
     } catch (err: any) {
-      toast.error(err.message || 'Dang nhap that bai');
+      toast.error(err.message || 'Đăng nhập thất bại');
     } finally {
       setIsLoading(false);
     }
@@ -51,13 +51,13 @@ export default function PosLoginPage() {
             <Monitor className="h-8 w-8 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-white">POS Terminal</h1>
-          <p className="text-white/70 mt-1">Dang nhap de bat dau ca ban hang</p>
+          <p className="text-white/70 mt-1">Đăng nhập để bắt đầu ca bán hàng</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-2xl p-8">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div className="space-y-1.5">
-              <Label htmlFor="email">Email nhan vien</Label>
+              <Label htmlFor="email">Email nhân viên</Label>
               <Input
                 id="email"
                 type="email"
@@ -69,12 +69,12 @@ export default function PosLoginPage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="password">Mat khau</Label>
+              <Label htmlFor="password">Mật khẩu</Label>
               <div className="relative">
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Nhap mat khau"
+                  placeholder="Nhập mật khẩu"
                   {...register('password')}
                   className={errors.password ? 'border-danger-500 pr-10' : 'pr-10'}
                 />
@@ -90,7 +90,7 @@ export default function PosLoginPage() {
             </div>
 
             <Button type="submit" className="w-full h-11" disabled={isLoading}>
-              {isLoading ? 'Dang dang nhap...' : 'Bat Dau Ca Lam'}
+              {isLoading ? 'Đang đăng nhập...' : 'Bắt Đầu Ca Làm'}
             </Button>
           </form>
         </div>
