@@ -27,20 +27,27 @@ export const STORE = {
 
   // SEO
   description:
-    'Nội Thất Khánh Huyền tại Đồng Xoài, Bình Phước. Chuyên cung cấp nội thất gỗ, nhựa giả mây, ga giường, chăn gối đệm, bàn trang điểm, combo phòng ngủ. Giá tốt, giao hàng toàn quốc, miễn phí vận chuyển.',
+    'Nội Thất Đồng Xoài, Nội Thất Bình Phước - Nội Thất Khánh Huyền chuyên cung cấp nội thất gỗ, nhựa giả mây, ga giường, chăn gối đệm, bàn trang điểm, combo phòng ngủ. Giá tốt, giao hàng toàn quốc, miễn phí vận chuyển.',
   keywords: [
     'noithatkhanhhuyen',
     'noithatkhanhhuyen.com',
     'nội thất Khánh Huyền',
     'nội thất Đồng Xoài',
     'nội thất Bình Phước',
-    'mua nội thất Bình Phước',
-    'nội thất gỗ',
+    'nội thất đồng xoài',
+    'nội thất bình phước',
+    'nội thất đồng xoài bình phước',
+    'mua nội thất đồng xoài',
+    'mua nội thất bình phước',
+    'nội thất gỗ đồng xoài',
+    'nội thất gỗ bình phước',
     'nội thất nhựa giả mây',
     'ga giường chăn gối đệm',
     'bàn trang điểm',
     'combo phòng ngủ',
     'giường tủ bàn ghế',
+    'sofa đồng xoài',
+    'sofa bình phước',
     'Khánh Huyền',
   ],
 

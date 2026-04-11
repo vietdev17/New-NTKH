@@ -5,8 +5,8 @@ import ProductsClient from './products-client';
 const SITE_URL = STORE.url;
 const SITE_NAME = STORE.name;
 
-const title = `Tất Cả Sản Phẩm Nội Thất - ${SITE_NAME}`;
-const description = `Khám phá hàng trăm sản phẩm nội thất chất lượng tại ${SITE_NAME}, ${STORE.city} ${STORE.province}. Nội thất gỗ, nhựa giả mây, ga giường, bàn trang điểm. Giá tốt, giao hàng toàn quốc.`;
+const title = `Sản Phẩm Nội Thất Đồng Xoài, Bình Phước - ${SITE_NAME}`;
+const description = `Mua nội thất Đồng Xoài, nội thất Bình Phước giá tốt tại ${SITE_NAME}. Nội thất gỗ, nhựa giả mây, ga giường, bàn trang điểm, sofa. Giao hàng toàn quốc, miễn phí vận chuyển.`;
 const url = `${SITE_URL}/products`;
 
 export const metadata: Metadata = {

@@ -55,12 +55,10 @@ export class CreatePosOrderDto {
   @Type(() => PosOrderItemDto)
   items: PosOrderItemDto[];
 
-  @ApiProperty({ enum: PaymentMethod, example: PaymentMethod.CASH })
+  @ApiProperty({ enum: ['cash', 'bank_transfer', 'cod', 'deposit_cash', 'deposit_bank'], example: 'cash' })
   @IsNotEmpty()
-  @IsEnum(PaymentMethod, {
-    message: 'Phuong thuc thanh toan: cash | bank_transfer',
-  })
-  paymentMethod: PaymentMethod;
+  @IsString()
+  paymentMethod: string;
 
   @ApiPropertyOptional({ example: 'NOITHAT20' })
   @IsOptional()
@@ -77,4 +75,41 @@ export class CreatePosOrderDto {
   @IsOptional()
   @IsString()
   note?: string;
+
+  @ApiPropertyOptional({ description: 'So tien dat coc (neu khach dat coc)', minimum: 0 })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  depositAmount?: number;
+
+  // Shipping address (khi giao hang)
+  @ApiPropertyOptional({ example: 'Nguyen Van B' })
+  @IsOptional()
+  @IsString()
+  shippingFullName?: string;
+
+  @ApiPropertyOptional({ example: '0901234567' })
+  @IsOptional()
+  @IsString()
+  shippingPhone?: string;
+
+  @ApiPropertyOptional({ example: '123 Nguyen Hue' })
+  @IsOptional()
+  @IsString()
+  shippingStreet?: string;
+
+  @ApiPropertyOptional({ example: 'Phuong Ben Nghe' })
+  @IsOptional()
+  @IsString()
+  shippingWard?: string;
+
+  @ApiPropertyOptional({ example: 'Quan 1' })
+  @IsOptional()
+  @IsString()
+  shippingDistrict?: string;
+
+  @ApiPropertyOptional({ example: 'TP Ho Chi Minh' })
+  @IsOptional()
+  @IsString()
+  shippingProvince?: string;
 }

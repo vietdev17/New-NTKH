@@ -16,7 +16,7 @@ export default function AdminDashboardPage() {
     queryFn: () => reportService.getDashboard(),
   });
 
-  const d = dashboard as any;
+  const data = dashboard as any;
 
   if (isLoading) return <LoadingSpinner className="min-h-[50vh]" />;
 
@@ -31,37 +31,29 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard
           title="Doanh thu hôm nay"
-          value={formatPrice(d?.todayRevenue || 0)}
+          value={formatPrice(data?.revenue?.today || 0)}
           icon={DollarSign}
-          change={d?.revenueChange}
-          changeLabel="so hôm qua"
           color="primary"
           delay={0}
         />
         <StatsCard
           title="Đơn hàng mới"
-          value={d?.todayOrders || 0}
+          value={data?.orders?.total || 0}
           icon={ShoppingCart}
-          change={d?.ordersChange}
-          changeLabel="so hôm qua"
           color="success"
           delay={0.05}
         />
         <StatsCard
           title="Khách hàng mới"
-          value={d?.newCustomers || 0}
+          value={data?.customers?.newThisMonth || 0}
           icon={Users}
-          change={d?.customersChange}
-          changeLabel="so hôm qua"
           color="accent"
           delay={0.1}
         />
         <StatsCard
-          title="Sản phẩm bán"
-          value={d?.soldProducts || 0}
+          title="Sản phẩm"
+          value={data?.products?.total || 0}
           icon={Package}
-          change={d?.productsChange}
-          changeLabel="so hôm qua"
           color="warning"
           delay={0.15}
         />
@@ -82,7 +74,7 @@ export default function AdminDashboardPage() {
               <span>Tháng này</span>
             </div>
           </div>
-          <RevenueChart data={d?.revenueChart || []} />
+          <RevenueChart data={[]} />
         </motion.div>
 
         <motion.div
@@ -92,7 +84,7 @@ export default function AdminDashboardPage() {
           className="bg-white rounded-xl border border-gray-100 shadow-card p-5"
         >
           <h2 className="font-semibold text-gray-900 mb-4">Trạng thái đơn hàng</h2>
-          <OrderStatusChart data={d?.orderStatusStats || []} />
+          <OrderStatusChart data={data?.orders?.byStatus || {}} />
         </motion.div>
       </div>
 
@@ -108,23 +100,7 @@ export default function AdminDashboardPage() {
             <Clock className="h-5 w-5 text-primary-500" />
             <h2 className="font-semibold">Đơn hàng gần đây</h2>
           </div>
-          <div className="space-y-3">
-            {(d?.recentOrders || []).map((order: any) => (
-              <div key={order._id} className="flex items-center justify-between text-sm">
-                <div>
-                  <p className="font-medium">#{order.orderCode}</p>
-                  <p className="text-xs text-gray-400">{formatDate(order.createdAt)}</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <StatusBadge status={order.status} type="order" />
-                  <span className="font-semibold text-primary-600">{formatPrice(order.total)}</span>
-                </div>
-              </div>
-            ))}
-            {(!d?.recentOrders || d.recentOrders.length === 0) && (
-              <p className="text-gray-400 text-sm text-center py-4">Chưa có đơn hàng</p>
-            )}
-          </div>
+          <p className="text-gray-400 text-sm text-center py-4">Chưa có dữ liệu</p>
         </motion.div>
 
         <motion.div
@@ -134,21 +110,7 @@ export default function AdminDashboardPage() {
           className="bg-white rounded-xl border border-gray-100 shadow-card p-5"
         >
           <h2 className="font-semibold mb-4">Sản phẩm bán chạy</h2>
-          <div className="space-y-3">
-            {(d?.topProducts || []).map((p: any, i: number) => (
-              <div key={p._id} className="flex items-center gap-3 text-sm">
-                <span className="text-lg font-bold text-gray-200 w-6">{i + 1}</span>
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium line-clamp-1">{p.name}</p>
-                  <p className="text-xs text-gray-400">Đã bán: {p.sold}</p>
-                </div>
-                <span className="font-semibold text-primary-600">{formatPrice(p.revenue)}</span>
-              </div>
-            ))}
-            {(!d?.topProducts || d.topProducts.length === 0) && (
-              <p className="text-gray-400 text-sm text-center py-4">Chưa có dữ liệu</p>
-            )}
-          </div>
+          <p className="text-gray-400 text-sm text-center py-4">Chưa có dữ liệu</p>
         </motion.div>
       </div>
     </div>

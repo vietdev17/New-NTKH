@@ -13,11 +13,14 @@ const LABELS: Record<string, string> = {
 };
 
 interface OrderStatusChartProps {
-  data: { status: string; count: number }[];
+  data: { status: string; count: number }[] | Record<string, number>;
 }
 
 export function OrderStatusChart({ data }: OrderStatusChartProps) {
-  const chartData = data.map((d) => ({ ...d, name: LABELS[d.status] || d.status }));
+  // Convert object to array if needed
+  const chartData = Array.isArray(data)
+    ? data.map((d) => ({ ...d, name: LABELS[d.status] || d.status }))
+    : Object.entries(data).map(([status, count]) => ({ status, count, name: LABELS[status] || status }));
 
   return (
     <ResponsiveContainer width="100%" height={240}>

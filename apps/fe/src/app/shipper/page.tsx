@@ -1,14 +1,17 @@
 'use client';
+import { useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Package, CheckCircle, DollarSign, Truck, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LoadingSpinner } from '@/components/shared/loading-spinner';
 import { StatusBadge } from '@/components/shared/status-badge';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { shipperService } from '@/services/shipper.service';
 import { useAuthStore } from '@/stores/use-auth-store';
 import { formatPrice, formatDate } from '@/lib/utils';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 
 function StatItem({ icon: Icon, label, value, color }: any) {
   return (
@@ -25,14 +28,34 @@ function StatItem({ icon: Icon, label, value, color }: any) {
 }
 
 export default function ShipperDashboardPage() {
+  const router = useRouter();
   const { user } = useAuthStore();
+  const qc = useQueryClient();
+  const acceptedIdRef = useRef<string | null>(null);
 
   const { data: dashboard, isLoading } = useQuery({
     queryKey: ['shipper-dashboard'],
     queryFn: () => shipperService.getMyDashboard(),
   });
 
+  // Accept order mutation (for WAITING_PICKUP orders)
+  const acceptMutation = useMutation({
+    mutationFn: (orderId: string) => {
+      acceptedIdRef.current = orderId;
+      return shipperService.acceptOrder(orderId);
+    },
+    onSuccess: () => {
+      toast.success('Đã nhận đơn! Bắt đầu giao ngay.');
+      qc.invalidateQueries({ queryKey: ['shipper-dashboard'] });
+      if (acceptedIdRef.current) {
+        router.push(`/shipper/orders/${acceptedIdRef.current}`);
+      }
+    },
+    onError: (e: any) => toast.error(e?.message || 'Nhận đơn thất bại'),
+  });
+
   const d = dashboard as any;
+  const pendingOrders = d?.pendingOrders || [];
 
   if (isLoading) return <LoadingSpinner className="min-h-[60vh]" />;
 
@@ -65,10 +88,10 @@ export default function ShipperDashboardPage() {
         <div>
           <div className="flex items-center justify-between mb-3">
             <h2 className="font-semibold">Đơn hàng cần giao</h2>
-            <Link href="/shipper/orders" className="text-sm text-secondary-600">Xem tất cả</Link>
+            <Link href="/shipper/available" className="text-sm text-secondary-600">Xem tất cả</Link>
           </div>
           <div className="space-y-3">
-            {(d?.pendingOrders || []).map((order: any, i: number) => (
+            {pendingOrders.map((order: any, i: number) => (
               <motion.div
                 key={order._id}
                 initial={{ opacity: 0, x: -20 }}
@@ -86,20 +109,37 @@ export default function ShipperDashboardPage() {
                 <div className="flex items-start gap-2 text-sm text-gray-600">
                   <MapPin className="h-3.5 w-3.5 text-secondary-500 mt-0.5 shrink-0" />
                   <p className="text-xs line-clamp-2">
-                    {order.shippingStreet || order.shippingAddress?.street}, {order.shippingDistrict || order.shippingAddress?.district}, {order.shippingProvince || order.shippingAddress?.province}
+                    {[order.shippingStreet, order.shippingWard, order.shippingDistrict, order.shippingProvince || order.shippingAddress?.province]
+                      .filter(Boolean).join(', ')}
                   </p>
                 </div>
                 <div className="flex gap-2 mt-3">
                   <Button size="sm" variant="outline" asChild className="flex-1 h-8 text-xs">
                     <Link href={`/shipper/orders/${order._id}`}>Chi tiết</Link>
                   </Button>
-                  <Button size="sm" className="flex-1 h-8 text-xs bg-secondary-600 hover:bg-secondary-700" asChild>
-                    <Link href={`/shipper/orders/${order._id}`}>Bắt đầu giao</Link>
-                  </Button>
+                  {order.status === 'waiting_pickup' ? (
+                    <Button
+                      size="sm"
+                      className="flex-1 h-8 text-xs bg-secondary-600 hover:bg-secondary-700"
+                      onClick={() => acceptMutation.mutate(order._id)}
+                      disabled={acceptMutation.isPending}
+                    >
+                      {acceptMutation.isPending && acceptedIdRef.current === order._id ? 'Đang xử lý...' : 'Nhận đơn & giao'}
+                    </Button>
+                  ) : (
+                    <Button
+                      size="sm"
+                      className="flex-1 h-8 text-xs bg-green-500 hover:bg-green-600"
+                      onClick={() => acceptMutation.mutate(order._id)}
+                      disabled={acceptMutation.isPending}
+                    >
+                      {acceptMutation.isPending && acceptedIdRef.current === order._id ? 'Đang xử lý...' : 'Bắt đầu giao'}
+                    </Button>
+                  )}
                 </div>
               </motion.div>
             ))}
-            {(!d?.pendingOrders || d.pendingOrders.length === 0) && (
+            {pendingOrders.length === 0 && (
               <div className="text-center py-8 text-gray-400">
                 <CheckCircle className="h-10 w-10 mx-auto mb-2 opacity-30" />
                 <p className="text-sm">Không có đơn hàng cần giao</p>

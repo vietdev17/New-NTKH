@@ -5,8 +5,8 @@ import CategoriesClient from './categories-client';
 const SITE_URL = STORE.url;
 const SITE_NAME = STORE.name;
 
-const title = `Danh Mục Sản Phẩm Nội Thất - ${SITE_NAME}`;
-const description = `Khám phá các danh mục nội thất đa dạng tại ${SITE_NAME}, ${STORE.city} ${STORE.province}. ${STORE.categories.join(', ')}. Giá tốt, giao hàng toàn quốc.`;
+const title = `Danh Mục Nội Thất Đồng Xoài, Bình Phước - ${SITE_NAME}`;
+const description = `Danh mục nội thất Đồng Xoài, nội thất Bình Phước - ${SITE_NAME} chuyên ${STORE.categories.join(', ')}. Giá tốt, giao hàng toàn quốc, miễn phí vận chuyển.`;
 const url = `${SITE_URL}/categories`;
 
 export const metadata: Metadata = {

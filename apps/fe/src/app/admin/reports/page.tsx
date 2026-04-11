@@ -24,7 +24,9 @@ export default function AdminReportsPage() {
     queryFn: () => reportService.getRevenueReport({ startDate, endDate }),
   });
 
-  const r = report as any;
+  const response = report as any;
+  const summary = response?.summary;
+  const chartData = response?.data || [];
 
   return (
     <div className="space-y-5">
@@ -52,10 +54,10 @@ export default function AdminReportsPage() {
         <>
           {/* Summary cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatsCard title="Tổng doanh thu" value={formatPrice(r?.totalRevenue || 0)} icon={DollarSign} color="primary" delay={0} />
-            <StatsCard title="Tổng đơn hàng" value={r?.totalOrders || 0} icon={ShoppingCart} color="success" delay={0.05} />
-            <StatsCard title="Đơn trung bình" value={formatPrice(r?.avgOrderValue || 0)} icon={Package} color="accent" delay={0.1} />
-            <StatsCard title="Khách mới" value={r?.newCustomers || 0} icon={Users} color="warning" delay={0.15} />
+            <StatsCard title="Tổng doanh thu" value={formatPrice(summary?.totalRevenue || 0)} icon={DollarSign} color="primary" delay={0} />
+            <StatsCard title="Tổng đơn hàng" value={summary?.totalOrders || 0} icon={ShoppingCart} color="success" delay={0.05} />
+            <StatsCard title="Đơn trung bình" value={formatPrice(summary?.avgOrderValue || 0)} icon={Package} color="accent" delay={0.1} />
+            <StatsCard title="Khách mới" value={summary?.newCustomers || 0} icon={Users} color="warning" delay={0.15} />
           </div>
 
           {/* Revenue by day */}
@@ -67,9 +69,9 @@ export default function AdminReportsPage() {
           >
             <h2 className="font-semibold mb-4">Doanh thu theo ngày</h2>
             <ResponsiveContainer width="100%" height={260}>
-              <BarChart data={r?.dailyRevenue || []} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
+              <BarChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
-                <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#9ca3af' }} tickLine={false} axisLine={false} />
+                <XAxis dataKey="period" tick={{ fontSize: 11, fill: '#9ca3af' }} tickLine={false} axisLine={false} />
                 <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} tickLine={false} axisLine={false}
                   tickFormatter={(v) => `${(v / 1000000).toFixed(0)}M`} />
                 <Tooltip formatter={(v: any) => [formatPrice(v), 'Doanh thu']} />
@@ -78,7 +80,7 @@ export default function AdminReportsPage() {
             </ResponsiveContainer>
           </motion.div>
 
-          {/* Top products */}
+          {/* Top products - API không có dữ liệu này */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -86,29 +88,7 @@ export default function AdminReportsPage() {
             className="bg-white rounded-xl border border-gray-100 shadow-card p-5"
           >
             <h2 className="font-semibold mb-4">Sản phẩm bán chạy nhất</h2>
-            <div className="space-y-3">
-              {(r?.topProducts || []).map((p: any, i: number) => (
-                <div key={p._id} className="flex items-center gap-3">
-                  <span className="text-lg font-bold text-gray-200 w-6">{i + 1}</span>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-1">
-                      <p className="text-sm font-medium">{p.name}</p>
-                      <p className="text-sm font-semibold text-primary-600">{formatPrice(p.revenue)}</p>
-                    </div>
-                    <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-primary-400 rounded-full"
-                        style={{ width: `${Math.min(100, (p.sold / (r?.topProducts?.[0]?.sold || 1)) * 100)}%` }}
-                      />
-                    </div>
-                    <p className="text-xs text-gray-400 mt-0.5">Đã bán: {p.sold}</p>
-                  </div>
-                </div>
-              ))}
-              {(!r?.topProducts || r.topProducts.length === 0) && (
-                <p className="text-gray-400 text-center py-4">Chưa có dữ liệu</p>
-              )}
-            </div>
+            <p className="text-gray-400 text-center py-4">Chưa có dữ liệu</p>
           </motion.div>
         </>
       )}

@@ -81,7 +81,13 @@ export function PosCart({ onCheckout }: PosCartProps) {
 
   const selectCustomer = (c: any) => {
     setCustomerData(c);
-    setSelectedCustomer({ _id: c._id, fullName: c.fullName, phone: c.phone, email: c.email });
+    setSelectedCustomer({
+      _id: c._id,
+      fullName: c.fullName,
+      phone: c.phone,
+      email: c.email,
+      addresses: c.addresses || [],
+    });
     setShowResults(false);
     setSearchInput('');
     setResults([]);

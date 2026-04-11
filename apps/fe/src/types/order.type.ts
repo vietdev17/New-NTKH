@@ -33,6 +33,8 @@ export interface Order {
   shippingWard: string;
   shippingDistrict: string;
   shippingProvince: string;
+  shippingLat?: number;
+  shippingLng?: number;
   shippingNote?: string | null;
   paymentMethod: 'cash' | 'bank_transfer' | 'cod';
   paymentStatus: 'unpaid' | 'paid' | 'partial' | 'refunded' | 'failed';
@@ -65,6 +67,8 @@ export interface ShippingAddressDto {
   ward: string;
   district: string;
   province: string;
+  lat?: number;
+  lng?: number;
 }
 
 export interface CreateOrderDto {

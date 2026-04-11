@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { MapPin, CreditCard, FileText, Plus } from 'lucide-react';
@@ -19,6 +19,9 @@ import { formatPrice } from '@/lib/utils';
 import { PAYMENT_METHOD_LABELS } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
+import { LoadingSpinner } from '@/components/shared/loading-spinner';
+import { useQuery } from '@tanstack/react-query';
+import { authService } from '@/services/auth.service';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -29,9 +32,39 @@ export default function CheckoutPage() {
   const [note, setNote] = useState('');
   const [addAddrOpen, setAddAddrOpen] = useState(false);
   const [savingAddr, setSavingAddr] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
   const createOrder = useCreateOrder();
 
+  // Fetch profile to get latest addresses
+  const { data: profile } = useQuery({
+    queryKey: ['user-profile'],
+    queryFn: () => authService.getMe(),
+    enabled: !!user,
+  });
+
   const addrForm = useForm<AddressFormData>({ resolver: zodResolver(addressSchema) });
+
+  // Wait for hydration
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
+  // Update user with profile data
+  useEffect(() => {
+    if (profile) {
+      setUser(profile);
+    }
+  }, [profile, setUser]);
+
+  // Redirect after hydration
+  useEffect(() => {
+    if (!isHydrated) return;
+    if (!user) {
+      router.push('/login?callbackUrl=/checkout');
+    } else if (items.length === 0) {
+      router.push('/cart');
+    }
+  }, [isHydrated, user, items.length, router]);
 
   const handleAddAddress = async (data: AddressFormData) => {
     setSavingAddr(true);
@@ -49,17 +82,11 @@ export default function CheckoutPage() {
     }
   };
 
-  if (!user) {
-    router.push('/login?callbackUrl=/checkout');
-    return null;
+  if (!isHydrated || !user || items.length === 0) {
+    return <LoadingSpinner className="min-h-screen" />;
   }
 
-  if (items.length === 0) {
-    router.push('/cart');
-    return null;
-  }
-
-  const addresses = user.addresses || [];
+  const addresses = profile?.addresses || user?.addresses || [];
   const selectedAddress = addresses[selectedAddressIndex];
 
   const handleSubmit = async () => {
@@ -80,6 +107,8 @@ export default function CheckoutPage() {
         ward: selectedAddress.ward,
         district: selectedAddress.district,
         province: selectedAddress.province,
+        lat: selectedAddress.lat,
+        lng: selectedAddress.lng,
       },
       paymentMethod,
       couponCode: couponCode || undefined,

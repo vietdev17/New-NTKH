@@ -64,6 +64,15 @@ export default function OrderTrackingPage({ params }: { params: { id: string } }
   const hasShipper = !!o.shipperName;
   const fullAddress = [o.shippingStreet, o.shippingWard, o.shippingDistrict, o.shippingProvince].filter(Boolean).join(', ');
 
+  // Get destination coords from order (lat/lng saved when address was created)
+  const destinationCoords = useMemo<[number, number] | null>(() => {
+    // Use saved lat/lng from order
+    if (o.shippingLat && o.shippingLng) {
+      return [o.shippingLat, o.shippingLng];
+    }
+    return null;
+  }, [o.shippingLat, o.shippingLng]);
+
   // Map markers
   const markers = useMemo<MarkerData[]>(() => {
     const result: MarkerData[] = [];
@@ -78,10 +87,10 @@ export default function OrderTrackingPage({ params }: { params: { id: string } }
       });
     }
 
-    if (o.shippingProvince) {
+    if (destinationCoords) {
       result.push({
         id: 'destination',
-        position: [10.8231, 106.6297],
+        position: destinationCoords,
         label: 'Địa chỉ giao hàng',
         type: 'destination',
         popup: fullAddress,
@@ -89,7 +98,7 @@ export default function OrderTrackingPage({ params }: { params: { id: string } }
     }
 
     return result;
-  }, [shipperLocation, o.shipperName, o.shipperPhone, o.shippingProvince, fullAddress]);
+  }, [shipperLocation, o.shipperName, o.shipperPhone, destinationCoords, fullAddress]);
 
   if (isLoading) return <LoadingSpinner className="min-h-[50vh]" />;
   if (!order) return null;

@@ -11,9 +11,12 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { addressSchema, type AddressFormData } from '@/lib/validators';
 import { VietnamAddressSelect } from '@/components/shared/vietnam-address-select';
+import { LocationIQAutocomplete } from '@/components/shared/locationiq-autocomplete';
 import { userService } from '@/services/user.service';
+import { geocodeAddress } from '@/lib/geocoding';
 import { useAuthStore } from '@/stores/use-auth-store';
 import toast from 'react-hot-toast';
+import type { GeocodingResult } from '@/lib/geocoding';
 
 export default function AddressesPage() {
   const { user, setUser } = useAuthStore();
@@ -21,6 +24,7 @@ export default function AddressesPage() {
   const [editing, setEditing] = useState<any>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [selectedPlace, setSelectedPlace] = useState<GeocodingResult | null>(null);
 
   const form = useForm<AddressFormData>({
     resolver: zodResolver(addressSchema),
@@ -30,12 +34,14 @@ export default function AddressesPage() {
 
   const openAdd = () => {
     setEditing(null);
+    setSelectedPlace(null);
     form.reset({ fullName: '', phone: '', street: '', ward: '', district: '', province: '', isDefault: false });
     setOpen(true);
   };
 
   const openEdit = (addr: any) => {
     setEditing(addr);
+    setSelectedPlace(addr.lat ? { lat: addr.lat, lon: addr.lng } as GeocodingResult : null);
     form.reset(addr);
     setOpen(true);
   };
@@ -43,11 +49,27 @@ export default function AddressesPage() {
   const onSubmit = async (data: AddressFormData) => {
     setSaving(true);
     try {
+      // Geocode address if not already geocoded
+      let coords = selectedPlace ? { lat: selectedPlace.lat, lng: selectedPlace.lon } : null;
+      if (!coords && data.street && data.province) {
+        toast.loading('Đang lấy tọa độ...', { id: 'geocode' });
+        const result = await geocodeAddress(data);
+        toast.remove('geocode');
+        if (result) {
+          coords = { lat: result.lat, lng: result.lon };
+        }
+      }
+
+      const payload = {
+        ...data,
+        lat: coords?.lat,
+        lng: coords?.lng,
+      };
       let updated;
       if (editing?._id) {
-        updated = await userService.updateAddress(editing._id, data);
+        updated = await userService.updateAddress(editing._id, payload);
       } else {
-        updated = await userService.addAddress(data);
+        updated = await userService.addAddress(payload);
       }
       setUser(updated);
       toast.success(editing ? 'Đã cập nhật địa chỉ' : 'Đã thêm địa chỉ');
@@ -180,13 +202,6 @@ export default function AddressesPage() {
                 )}
               </div>
             </div>
-            <div className="space-y-1.5">
-              <Label>Địa chỉ cụ thể</Label>
-              <Input placeholder="Số nhà, tên đường..." {...form.register('street')} />
-              {form.formState.errors.street && (
-                <p className="text-xs text-danger-500">{form.formState.errors.street.message}</p>
-              )}
-            </div>
             <Controller
               control={form.control}
               name="province"
@@ -207,6 +222,20 @@ export default function AddressesPage() {
                     district: form.formState.errors.district?.message,
                     ward: form.formState.errors.ward?.message,
                   }}
+                />
+              )}
+            />
+
+            <Controller
+              control={form.control}
+              name="street"
+              render={() => (
+                <LocationIQAutocomplete
+                  street={form.watch('street') || ''}
+                  ward={form.watch('ward') || ''}
+                  district={form.watch('district') || ''}
+                  province={form.watch('province') || ''}
+                  onChange={(field, value) => form.setValue(field, value)}
                 />
               )}
             />

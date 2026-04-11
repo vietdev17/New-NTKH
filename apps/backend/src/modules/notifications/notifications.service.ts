@@ -10,12 +10,15 @@ import { CreateNotificationDto } from './dto/create-notification.dto';
 import { QueryNotificationDto } from './dto/query-notification.dto';
 import { SocketGateway } from '../socket/socket.gateway';
 import { EmailService } from './email.service';
+import { User, UserDocument, UserRole } from '../users/schemas/user.schema';
 
 @Injectable()
 export class NotificationsService {
   constructor(
     @InjectModel(Notification.name)
     private notificationModel: Model<NotificationDocument>,
+    @InjectModel(User.name)
+    private userModel: Model<UserDocument>,
     private socketGateway: SocketGateway,
     private emailService: EmailService,
   ) {}
@@ -173,16 +176,33 @@ export class NotificationsService {
       });
     }
 
-    // 2. Push cho admin room
-    this.socketGateway.sendToAdmin('order:created', {
-      orderId: order._id,
-      orderNumber: order.orderNumber,
-      totalAmount: order.total,
-      channel: order.isPosOrder ? 'pos' : 'web',
-      createdAt: order.createdAt,
-    });
+    // 2. Push socket cho admin room + emit notification:new event
+    const adminNotification = {
+      id: `temp-${Date.now()}`,
+      title: 'Đơn hàng mới',
+      message: `Đơn hàng ${order.orderNumber} - ${(order.total || 0).toLocaleString('vi-VN')}đ từ ${order.isPosOrder ? 'POS' : 'Web'}`,
+      type: NotificationType.ORDER_CREATED,
+      actionUrl: `/admin/orders`,
+      createdAt: new Date().toISOString(),
+    };
+    this.socketGateway.sendToAdmin('notification:new', adminNotification);
 
-    // 3. Gui email xac nhan don hang
+    // 3. Tao notification cho all admins (luu vao DB)
+    const admins = await this.userModel.find({ role: UserRole.ADMIN, isDeleted: false }).lean();
+    const adminNotifications = admins.map((admin) => ({
+      userId: admin._id,
+      title: 'Đơn hàng mới',
+      message: `Đơn hàng ${order.orderNumber} - ${(order.total || 0).toLocaleString('vi-VN')}đ từ ${order.isPosOrder ? 'POS' : 'Web'}`,
+      type: NotificationType.ORDER_CREATED,
+      actionUrl: `/admin/orders`,
+      data: { orderId: order._id, orderNumber: order.orderNumber },
+      isRead: false,
+    }));
+    if (adminNotifications.length > 0) {
+      await this.notificationModel.insertMany(adminNotifications);
+    }
+
+    // 4. Gui email xac nhan don hang
     if (order.customerEmail) {
       await this.emailService.sendOrderConfirmation(order);
     }
@@ -287,36 +307,89 @@ export class NotificationsService {
    * Thong bao khi san pham sap het hang
    */
   async notifyLowStock(product: any, variant: any): Promise<void> {
-    this.socketGateway.sendToAdmin('stock:low', {
-      productId: product._id,
-      productName: product.name,
-      sku: variant.sku,
-      currentStock: variant.stock,
+    // Push socket notification:new cho admin
+    this.socketGateway.sendToAdmin('notification:new', {
+      id: `temp-${Date.now()}`,
+      title: 'Cảnh báo tồn kho thấp',
+      message: `${product.name} (SKU: ${variant.sku}) chỉ còn ${variant.stock} sản phẩm`,
+      type: NotificationType.LOW_STOCK,
+      actionUrl: `/admin/products/${product._id}`,
+      createdAt: new Date().toISOString(),
     });
+
+    // Tao notification cho all admins
+    const admins = await this.userModel.find({ role: UserRole.ADMIN, isDeleted: false }).lean();
+    const notifications = admins.map((admin) => ({
+      userId: admin._id,
+      title: 'Cảnh báo tồn kho thấp',
+      message: `${product.name} (SKU: ${variant.sku}) chỉ còn ${variant.stock} sản phẩm`,
+      type: NotificationType.LOW_STOCK,
+      actionUrl: `/admin/products/${product._id}`,
+      data: { productId: product._id, variantId: variant._id, sku: variant.sku },
+      isRead: false,
+    }));
+    if (notifications.length > 0) {
+      await this.notificationModel.insertMany(notifications);
+    }
   }
 
   /**
    * Thong bao khi co danh gia moi
    */
   async notifyNewReview(review: any, product: any): Promise<void> {
-    this.socketGateway.sendToAdmin('review:new', {
-      reviewId: review._id,
-      productId: product._id,
-      productName: product.name,
-      rating: review.rating,
-      comment: review.comment,
+    // Push socket notification:new cho admin
+    this.socketGateway.sendToAdmin('notification:new', {
+      id: `temp-${Date.now()}`,
+      title: 'Đánh giá mới cần duyệt',
+      message: `${product.name} có đánh giá ${review.rating} sao: "${review.comment?.slice(0, 50)}..."`,
+      type: NotificationType.NEW_REVIEW,
+      actionUrl: `/admin/reviews`,
+      createdAt: new Date().toISOString(),
     });
+
+    // Tao notification cho all admins
+    const admins = await this.userModel.find({ role: UserRole.ADMIN, isDeleted: false }).lean();
+    const notifications = admins.map((admin) => ({
+      userId: admin._id,
+      title: 'Đánh giá mới cần duyệt',
+      message: `${product.name} có đánh giá ${review.rating} sao: "${review.comment?.slice(0, 50)}..."`,
+      type: NotificationType.NEW_REVIEW,
+      actionUrl: `/admin/reviews`,
+      data: { reviewId: review._id, productId: product._id },
+      isRead: false,
+    }));
+    if (notifications.length > 0) {
+      await this.notificationModel.insertMany(notifications);
+    }
   }
 
   /**
    * Thong bao khi co yeu cau tra hang
    */
   async notifyReturnRequested(returnRequest: any): Promise<void> {
-    this.socketGateway.sendToAdmin('return:requested', {
-      returnId: returnRequest._id,
-      orderId: returnRequest.order,
-      reason: returnRequest.reason,
-      createdAt: returnRequest.createdAt,
+    // Push socket notification:new cho admin
+    this.socketGateway.sendToAdmin('notification:new', {
+      id: `temp-${Date.now()}`,
+      title: 'Yêu cầu trả hàng mới',
+      message: `Khách yêu cầu trả hàng cho đơn #${returnRequest.order}: ${returnRequest.reason}`,
+      type: NotificationType.RETURN_REQUESTED,
+      actionUrl: `/admin/returns`,
+      createdAt: new Date().toISOString(),
     });
+
+    // Tao notification cho all admins
+    const admins = await this.userModel.find({ role: UserRole.ADMIN, isDeleted: false }).lean();
+    const notifications = admins.map((admin) => ({
+      userId: admin._id,
+      title: 'Yêu cầu trả hàng mới',
+      message: `Khách yêu cầu trả hàng cho đơn #${returnRequest.order}: ${returnRequest.reason}`,
+      type: NotificationType.RETURN_REQUESTED,
+      actionUrl: `/admin/returns`,
+      data: { returnId: returnRequest._id, orderId: returnRequest.order },
+      isRead: false,
+    }));
+    if (notifications.length > 0) {
+      await this.notificationModel.insertMany(notifications);
+    }
   }
 }

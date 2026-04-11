@@ -53,7 +53,14 @@ export class ShipperService {
       .limit(50)
       .lean();
 
-    return orders;
+    // Unwrap Mongoose enum Proxy -> plain string
+    return orders.map((o) => {
+      const plain = { ...o } as any;
+      if (plain.status && typeof plain.status === 'object' && 'value' in plain.status) {
+        plain.status = plain.status.value;
+      }
+      return plain;
+    });
   }
 
   // ===== DON HANG CUA SHIPPER (ACTIVE + LICH SU) =====
@@ -86,7 +93,13 @@ export class ShipperService {
     ]);
 
     return {
-      data,
+      data: data.map((o) => {
+        const plain = { ...o } as any;
+        if (plain.status && typeof plain.status === 'object' && 'value' in plain.status) {
+          plain.status = plain.status.value;
+        }
+        return plain;
+      }),
       pagination: {
         page,
         limit,
@@ -333,7 +346,14 @@ export class ShipperService {
       );
     }
 
-    return order;
+    // Chuyen status tu mongoose enum Proxy thanh string thuan
+    // vi lean() co the tra ve Proxy thay vi string thuan
+    const plainOrder = { ...order } as any;
+    if (plainOrder.status && typeof plainOrder.status === 'object' && 'value' in plainOrder.status) {
+      plainOrder.status = plainOrder.status.value;
+    }
+
+    return plainOrder;
   }
 
   // ===== THONG KE TONG QUAT =====

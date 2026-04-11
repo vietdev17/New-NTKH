@@ -18,11 +18,24 @@ interface PosCoupon {
   value: number;
 }
 
+interface CustomerAddress {
+  _id?: string;
+  fullName: string;
+  phone: string;
+  street: string;
+  ward?: string;
+  district?: string;
+  province: string;
+  isDefault?: boolean;
+  label?: string;
+}
+
 interface SelectedCustomer {
   _id: string;
   fullName: string;
   phone?: string;
   email?: string;
+  addresses?: CustomerAddress[];
 }
 
 interface PosState {

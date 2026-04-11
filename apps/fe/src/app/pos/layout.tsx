@@ -10,15 +10,17 @@ import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { NotificationBell } from '@/components/shared/notification-bell';
 
 export default function PosLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { currentShift } = usePosStore();
   const { user, logout } = useAuthStore();
-  const [time, setTime] = useState(new Date());
+  const [time, setTime] = useState<Date | null>(null);
   const router = useRouter();
 
   useEffect(() => {
+    setTime(new Date());
     const timer = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
@@ -78,9 +80,10 @@ export default function PosLayout({ children }: { children: React.ReactNode }) {
           )}
           <div className="hidden sm:flex items-center gap-1.5 text-gray-500">
             <Clock className="h-4 w-4" />
-            <span className="font-mono text-sm">{format(time, 'HH:mm:ss', { locale: vi })}</span>
+            <span className="font-mono text-sm">{time ? format(time, 'HH:mm:ss', { locale: vi }) : '--:--:--'}</span>
           </div>
           <span className="font-medium text-gray-700 hidden md:block">{user?.fullName}</span>
+          <NotificationBell />
           <button
             onClick={handleLogout}
             className="rounded-lg p-2 hover:bg-gray-100 text-gray-500 hover:text-danger-500 transition-colors"

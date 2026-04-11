@@ -69,13 +69,11 @@ export default function ShipperOrderDetailPage() {
         type: 'shipper',
       });
     }
-    // Destination - use a fixed point for now (address geocoding would need an API)
-    // We'll show the address in popup
-    if (o?.shippingProvince) {
-      // Default to HCMC center if no geocoding
+    // Destination - use lat/lng from order (saved when customer added address)
+    if (o?.shippingLat && o?.shippingLng) {
       result.push({
         id: 'destination',
-        position: [10.8231, 106.6297],
+        position: [o.shippingLat, o.shippingLng],
         label: o.shippingFullName || 'Điểm giao',
         type: 'destination',
         popup: [o.shippingStreet, o.shippingWard, o.shippingDistrict, o.shippingProvince].filter(Boolean).join(', '),

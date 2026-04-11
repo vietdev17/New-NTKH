@@ -7,6 +7,8 @@ export interface Address {
   district: string;
   province: string;
   note?: string;
+  lat?: number;
+  lng?: number;
 }
 
 export interface User {

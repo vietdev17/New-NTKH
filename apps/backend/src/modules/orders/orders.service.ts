@@ -227,6 +227,8 @@ export class OrdersService {
             shippingWard: dto.shippingAddress.ward,
             shippingDistrict: dto.shippingAddress.district,
             shippingProvince: dto.shippingAddress.province,
+            shippingLat: dto.shippingAddress.lat,
+            shippingLng: dto.shippingAddress.lng,
             shippingNote: dto.note || null,
             couponCode: dto.couponCode?.toUpperCase() || null,
             isPosOrder: false,

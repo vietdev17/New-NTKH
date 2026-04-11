@@ -22,7 +22,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <NextTopLoader color="#8B4513" height={3} showSpinner={false} speed={300} />
       {children}
       <Toaster
-        position="top-right"
+        position="bottom-center"
         toastOptions={{
           duration: 3000,
           style: { background: '#333', color: '#fff', borderRadius: '12px' },

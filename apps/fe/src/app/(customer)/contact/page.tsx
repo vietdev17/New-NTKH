@@ -5,8 +5,8 @@ import ContactClient from './contact-client';
 const SITE_URL = STORE.url;
 const SITE_NAME = STORE.name;
 
-const title = `Liên Hệ - ${SITE_NAME}`;
-const description = `Liên hệ ${SITE_NAME} tại ${STORE.address}. Hotline: ${STORE.phone}. Email: ${STORE.email}. Tư vấn miễn phí, hỗ trợ 24/7.`;
+const title = `Liên Hệ Nội Thất Đồng Xoài, Bình Phước - ${SITE_NAME}`;
+const description = `Liên hệ nội thất Đồng Xoài, nội thất Bình Phước - ${SITE_NAME} tại ${STORE.address}. Hotline: ${STORE.phone}. Email: ${STORE.email}. Tư vấn miễn phí, hỗ trợ 24/7.`;
 const url = `${SITE_URL}/contact`;
 
 export const metadata: Metadata = {

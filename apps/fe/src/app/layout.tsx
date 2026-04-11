@@ -50,8 +50,9 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: '/images/logo.png',
-    apple: '/images/logo.png',
+    icon: '/favicon.png',
+    shortcut: '/favicon.ico',
+    apple: '/favicon.png',
   },
   alternates: { canonical: SITE_URL },
 };

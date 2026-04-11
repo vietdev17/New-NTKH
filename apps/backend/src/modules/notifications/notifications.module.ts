@@ -8,6 +8,7 @@ import { NotificationsService } from './notifications.service';
 import { NotificationsController } from './notifications.controller';
 import { EmailService } from './email.service';
 import { SocketModule } from '../socket/socket.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { SocketModule } from '../socket/socket.module';
       { name: Notification.name, schema: NotificationSchema },
     ]),
     forwardRef(() => SocketModule),
+    UsersModule,
   ],
   controllers: [NotificationsController],
   providers: [NotificationsService, EmailService],

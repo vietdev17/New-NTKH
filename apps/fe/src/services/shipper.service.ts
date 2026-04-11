@@ -26,7 +26,9 @@ export const shipperService = {
   },
   getMyDashboard: async (): Promise<any> => {
     const { data } = await api.get('/shipper/dashboard');
-    return data;
+    // Dashboard also wraps in { success, data }
+    const d = (data as any);
+    return d?.data ?? d;
   },
   getMyOrders: async (params?: QueryParams): Promise<{ data: Order[]; meta: any }> => {
     const response = await api.get('/shipper/orders/my-orders', { params });
@@ -46,10 +48,13 @@ export const shipperService = {
   // Shipper: available orders + accept/reject
   getAvailableOrders: async (): Promise<Order[]> => {
     const { data } = await api.get('/shipper/orders/available');
-    return data;
+    // Backend returns { success: true, data: [...] }, interceptor returns { data: [...] }
+    // But interceptor line 96 unwraps to response.data = array directly
+    return Array.isArray(data) ? data : (data as any)?.data ?? [];
   },
   acceptOrder: async (orderId: string): Promise<void> => {
-    await api.post(`/shipper/orders/${orderId}/accept`);
+    const { data } = await api.post(`/shipper/orders/${orderId}/accept`);
+    return (data as any)?.data ?? data;
   },
   rejectOrder: async (orderId: string): Promise<void> => {
     await api.post(`/shipper/orders/${orderId}/reject`);

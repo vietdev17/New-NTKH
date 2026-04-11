@@ -20,13 +20,24 @@ export function useNotification() {
   });
 
   useEffect(() => {
-    const items = Array.isArray(data?.data) ? data.data : (data as any)?.data?.items || [];
+    // API returns: { data: { data: [...], total, page, totalPages } }
+    const items = (data as any)?.data?.data || (data as any)?.data?.items || [];
     if (items.length > 0) setNotifications(items);
   }, [data, setNotifications]);
+
+  // Play notification sound
+  const playSound = () => {
+    try {
+      const audio = new Audio('/sounds/notification.mp3');
+      audio.volume = 0.5;
+      audio.play().catch(() => {});
+    } catch {}
+  };
 
   const handleNewNotification = useCallback((notification: any) => {
     addNotification(notification);
     toast(notification.title, { icon: '🔔' });
+    playSound();
   }, [addNotification]);
 
   useSocketEvent('notification:new', handleNewNotification);
@@ -57,7 +68,8 @@ export function useNotifications() {
   });
 
   useEffect(() => {
-    const items = Array.isArray(data?.data) ? data.data : (data as any)?.data?.items || [];
+    // API returns: { data: { data: [...], total, page, totalPages } }
+    const items = (data as any)?.data?.data || (data as any)?.data?.items || [];
     if (items.length > 0) setNotifications(items);
   }, [data, setNotifications]);
 
