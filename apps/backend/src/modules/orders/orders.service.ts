@@ -385,10 +385,26 @@ export class OrdersService {
         discountReason = `Ma giam gia POS: ${dto.couponCode.toUpperCase()}`;
       }
 
-      // POS: khong co phi van chuyen
       const total = subtotal - discountAmount;
 
-      // Tinh tien thua (voi thanh toan tien mat)
+      // ===== DEPOSIT LOGIC =====
+      const isDeposit =
+        dto.paymentMethod === 'deposit_cash' ||
+        dto.paymentMethod === 'deposit_bank';
+      const depositAmount = dto.depositAmount || 0;
+
+      if (isDeposit) {
+        if (depositAmount <= 0) {
+          throw new BadRequestException('So tien dat coc phai lon hon 0');
+        }
+        if (depositAmount > total) {
+          throw new BadRequestException(
+            `So tien dat coc (${depositAmount}) khong duoc lon hon tong tien (${total})`,
+          );
+        }
+      }
+
+      // ===== CASH VALIDATION =====
       let changeAmount: number | null = null;
       if (dto.paymentMethod === PaymentMethod.CASH && dto.cashReceived) {
         if (dto.cashReceived < total) {
@@ -397,6 +413,32 @@ export class OrdersService {
           );
         }
         changeAmount = dto.cashReceived - total;
+      }
+
+      // ===== SHIPPING ADDRESS =====
+      const hasShipping =
+        dto.shippingStreet || dto.shippingWard || dto.shippingDistrict;
+      const shippingFullName = dto.shippingFullName || dto.customerName;
+      const shippingPhone = dto.shippingPhone || dto.customerPhone;
+
+      // ===== DETERMINE ORDER STATUS =====
+      let orderStatus = OrderStatus.CONFIRMED;
+      let paymentStatus = PaymentStatus.PAID;
+      let note = 'Don POS - xac nhan ngay';
+
+      if (isDeposit) {
+        // Deposit order: confirmed + partial payment
+        orderStatus = OrderStatus.CONFIRMED;
+        paymentStatus = PaymentStatus.PARTIAL;
+        note = `Don POS - dat coc ${new Intl.NumberFormat('vi-VN', {
+          style: 'currency',
+          currency: 'VND',
+          minimumFractionDigits: 0,
+        }).format(depositAmount)}`;
+      } else if (hasShipping) {
+        // Delivery order: preparing, await shipment
+        orderStatus = OrderStatus.PREPARING;
+        note = 'Don POS giao hang - cho san sang';
       }
 
       const orderNumber = await this.generateOrderNumber(session);
@@ -415,31 +457,41 @@ export class OrdersService {
             subtotal,
             discountAmount,
             discountReason,
-            shippingFee: 0,
+            shippingFee: hasShipping ? 0 : 0,
             total,
-            // POS: bat dau tu CONFIRMED, thanh toan ngay
-            status: OrderStatus.CONFIRMED,
-            paymentMethod: dto.paymentMethod,
-            paymentStatus: PaymentStatus.PAID,
-            // POS khong co dia chi giao hang - dung thong tin cua hang
-            shippingFullName: dto.customerName,
-            shippingPhone: dto.customerPhone,
-            shippingStreet: 'Mua tai cua hang',
-            shippingWard: '',
-            shippingDistrict: '',
-            shippingProvince: 'Ho Chi Minh',
+            status: orderStatus,
+            paymentMethod: isDeposit
+              ? dto.paymentMethod === 'deposit_cash'
+                ? PaymentMethod.CASH
+                : PaymentMethod.BANK_TRANSFER
+              : (dto.paymentMethod as any),
+            paymentStatus,
+            // Shipping address
+            shippingFullName,
+            shippingPhone,
+            shippingStreet: hasShipping ? dto.shippingStreet : 'Mua tai cua hang',
+            shippingWard: hasShipping ? dto.shippingWard || '' : '',
+            shippingDistrict: hasShipping ? dto.shippingDistrict || '' : '',
+            shippingProvince: hasShipping
+              ? dto.shippingProvince || 'Ho Chi Minh'
+              : 'Ho Chi Minh',
             shippingNote: dto.note || null,
             couponCode: dto.couponCode?.toUpperCase() || null,
             isPosOrder: true,
             createdBy: new Types.ObjectId(staffId),
-            cashReceived: dto.cashReceived || null,
+            cashReceived:
+              dto.paymentMethod === 'cash'
+                ? dto.cashReceived || null
+                : isDeposit && dto.paymentMethod === 'deposit_cash'
+                ? depositAmount
+                : null,
             changeAmount,
             statusHistory: [
               {
-                status: OrderStatus.CONFIRMED,
+                status: orderStatus,
                 changedBy: new Types.ObjectId(staffId),
                 changedAt: new Date(),
-                note: 'Don POS - xac nhan ngay',
+                note,
               },
             ],
           },
@@ -449,7 +501,7 @@ export class OrdersService {
 
       await session.commitTransaction();
 
-      // Thông báo + Socket (POS)
+      // Thong bao + Socket (POS)
       await this.notificationsService.notifyOrderCreated(order);
 
       return order;

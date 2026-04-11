@@ -10,6 +10,7 @@ import {
   ArrayMinSize,
   IsMongoId,
   MaxLength,
+  IsNumber,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -63,6 +64,16 @@ export class ShippingAddressDto {
   @IsNotEmpty()
   @IsString()
   province: string;
+
+  @ApiPropertyOptional({ example: 10.8231 })
+  @IsOptional()
+  @IsNumber()
+  lat?: number;
+
+  @ApiPropertyOptional({ example: 106.6297 })
+  @IsOptional()
+  @IsNumber()
+  lng?: number;
 }
 
 export class CreateOrderDto {

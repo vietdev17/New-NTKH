@@ -26,6 +26,8 @@ export interface Address {
   district: string;
   province: string;
   isDefault: boolean;
+  lat?: number;
+  lng?: number;
 }
 
 @Schema({ timestamps: true })
@@ -90,6 +92,8 @@ export class User extends Document {
         district: { type: String, required: true },
         province: { type: String, required: true },
         isDefault: { type: Boolean, default: false },
+        lat: { type: Number },
+        lng: { type: Number },
       },
     ],
     default: [],

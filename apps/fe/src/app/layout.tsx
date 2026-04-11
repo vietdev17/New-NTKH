@@ -55,6 +55,7 @@ export const metadata: Metadata = {
     apple: '/favicon.png',
   },
   alternates: { canonical: SITE_URL },
+  manifest: '/manifest.json',
 };
 
 export const viewport: Viewport = {
@@ -114,6 +115,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="vi" className={inter.variable}>
       <head>
+        {/* Favicon - required by Google for SERP favicon display */}
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/favicon.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png" />
+        <meta name="msapplication-TileImage" content="/favicon.png" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}

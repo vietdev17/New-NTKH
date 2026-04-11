@@ -36,8 +36,12 @@ export interface Order {
   shippingLat?: number;
   shippingLng?: number;
   shippingNote?: string | null;
-  paymentMethod: 'cash' | 'bank_transfer' | 'cod';
+  paymentMethod: 'cash' | 'bank_transfer' | 'cod' | 'deposit_cash' | 'deposit_bank';
   paymentStatus: 'unpaid' | 'paid' | 'partial' | 'refunded' | 'failed';
+  depositAmount?: number;
+  cashReceived?: number;
+  changeAmount?: number;
+  paidAmount?: number;
   bankTransferConfirmed: boolean;
   status: 'pending' | 'confirmed' | 'preparing' | 'waiting_pickup' | 'in_transit' | 'delivered' | 'cancelled' | 'returned' | 'refunded';
   statusHistory: OrderStatusHistory[];

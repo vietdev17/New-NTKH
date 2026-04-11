@@ -153,6 +153,12 @@ export class Order extends Document {
   shippingProvince: string;
 
   @Prop()
+  shippingLat?: number;
+
+  @Prop()
+  shippingLng?: number;
+
+  @Prop()
   shippingNote?: string;
 
   // Shipper info
