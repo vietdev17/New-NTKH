@@ -103,11 +103,6 @@ const localBusinessSchema = {
     },
   ],
   sameAs: [STORE.facebook],
-  hasOfferCatalog: {
-    '@type': 'OfferCatalog',
-    name: 'Nội thất đồng xoài bình phước',
-    itemListElement: STORE.categories.map((cat) => ({ '@type': 'Offer', itemOffered: { '@type': 'Product', name: cat } })),
-  },
 };
 
 // JSON-LD: WebSite (Google Sitelinks Search Box)
