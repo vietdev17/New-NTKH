@@ -27,11 +27,11 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     };
   }
 
-  const title = `${p.name} - Giá Tốt Tại ${SITE_NAME}`;
+  const title = `${p.name} Đồng Xoài Bình Phước - Giá Tốt Tại ${SITE_NAME}`;
   const description = (
     p.shortDescription ||
-    (typeof p.description === 'string' ? p.description.replace(/\n/g, ' ').slice(0, 155) + '...' : '') ||
-    `Mua ${p.name} chính hãng tại ${SITE_NAME}, ${STORE.city} ${STORE.province}. Giao hàng toàn quốc, miễn phí vận chuyển.`
+    (typeof p.description === 'string' ? p.description.replace(/<[^>]*>/g, '').replace(/\n/g, ' ').slice(0, 155) + '...' : '') ||
+    `Mua ${p.name} chính hãng tại ${SITE_NAME}, ${STORE.city} ${STORE.province}. Nội thất đồng xoài bình phước, giao hàng toàn quốc, miễn phí vận chuyển.`
   ) as string;
   const image: string = p.images?.[0] || `${SITE_URL}/images/og-default.jpg`;
   const url = `${SITE_URL}/products/${params.slug}`;
@@ -61,25 +61,38 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 export default async function ProductDetailPage({ params }: { params: { slug: string } }) {
   const p = await getProduct(params.slug);
 
+  // Helper: ensure image URLs are absolute
+  const getImageUrl = (img: string) => {
+    if (!img) return `${SITE_URL}/images/og-default.jpg`;
+    if (img.startsWith('http')) return img;
+    return `${SITE_URL}${img}`;
+  };
+
+  // Ensure categoryId is an object with name/slug
+  const category = p?.categoryId && typeof p.categoryId === 'object' ? p.categoryId : null;
+
   // JSON-LD: Product schema — Google dùng để show giá, ảnh, rating trong kết quả tìm kiếm
   const productSchema = p
     ? {
         '@context': 'https://schema.org',
         '@type': 'Product',
         name: p.name,
-        description: p.shortDescription || p.description || '',
-        image: p.images?.length ? p.images : [`${SITE_URL}/images/og-default.jpg`],
+        description: p.shortDescription || (typeof p.description === 'string' ? p.description.replace(/<[^>]*>/g, '').slice(0, 500) : ''),
+        image: p.images?.length
+          ? p.images.map(getImageUrl)
+          : [`${SITE_URL}/images/og-default.jpg`],
         url: `${SITE_URL}/products/${params.slug}`,
         sku: p.sku || params.slug,
-        brand: p.brand
-          ? { '@type': 'Brand', name: p.brand }
-          : { '@type': 'Brand', name: SITE_NAME },
+        brand: {
+          '@type': 'Brand',
+          name: p.brand || SITE_NAME,
+        },
         offers: {
           '@type': 'Offer',
           url: `${SITE_URL}/products/${params.slug}`,
           priceCurrency: 'VND',
-          price: p.salePrice || p.basePrice || 0,
-          priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          price: p.salePrice || p.basePrice || '0',
+          priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
           availability:
             p.status === 'active'
               ? 'https://schema.org/InStock'
@@ -93,27 +106,41 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
         ...(p.rating?.count > 0 && {
           aggregateRating: {
             '@type': 'AggregateRating',
-            ratingValue: p.rating.average,
-            reviewCount: p.rating.count,
-            bestRating: 5,
-            worstRating: 1,
+            ratingValue: String(p.rating.average),
+            reviewCount: String(p.rating.count),
+            bestRating: '5',
+            worstRating: '1',
           },
         }),
       }
     : null;
 
   // JSON-LD: BreadcrumbList
+  const breadcrumbItems = [
+    { '@type': 'ListItem', position: 1, name: 'Trang chủ', item: SITE_URL },
+    { '@type': 'ListItem', position: 2, name: 'Sản phẩm', item: `${SITE_URL}/products` },
+  ];
+
+  if (category?.name) {
+    breadcrumbItems.push({
+      '@type': 'ListItem',
+      position: 3,
+      name: category.name,
+      item: `${SITE_URL}/categories/${category.slug}`,
+    });
+  }
+
+  breadcrumbItems.push({
+    '@type': 'ListItem',
+    position: breadcrumbItems.length + 1,
+    name: p?.name || 'Sản phẩm',
+    item: `${SITE_URL}/products/${params.slug}`,
+  });
+
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Trang chủ', item: SITE_URL },
-      { '@type': 'ListItem', position: 2, name: 'Sản phẩm', item: `${SITE_URL}/products` },
-      ...(p?.categoryId?.name
-        ? [{ '@type': 'ListItem', position: 3, name: p.categoryId.name, item: `${SITE_URL}/categories/${p.categoryId.slug}` }]
-        : []),
-      { '@type': 'ListItem', position: p?.categoryId ? 4 : 3, name: p?.name || 'Sản phẩm', item: `${SITE_URL}/products/${params.slug}` },
-    ],
+    itemListElement: breadcrumbItems,
   };
 
   return (

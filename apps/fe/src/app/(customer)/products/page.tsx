@@ -5,8 +5,8 @@ import ProductsClient from './products-client';
 const SITE_URL = STORE.url;
 const SITE_NAME = STORE.name;
 
-const title = `Sản Phẩm Nội Thất Đồng Xoài, Bình Phước - ${SITE_NAME}`;
-const description = `Mua nội thất Đồng Xoài, nội thất Bình Phước giá tốt tại ${SITE_NAME}. Nội thất gỗ, nhựa giả mây, ga giường, bàn trang điểm, sofa. Giao hàng toàn quốc, miễn phí vận chuyển.`;
+const title = `Nội Thất Đồng Xoài Bình Phước - Sản Phẩm Giá Tốt Tại ${SITE_NAME}`;
+const description = `Mua nội thất đồng xoài bình phước giá tốt tại ${SITE_NAME}. Nội thất gỗ, nhựa giả mây, ga giường, bàn trang điểm, sofa. Giao hàng toàn quốc, miễn phí vận chuyển.`;
 const url = `${SITE_URL}/products`;
 
 export const metadata: Metadata = {
