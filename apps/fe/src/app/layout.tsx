@@ -51,7 +51,6 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: '/favicon.png',
-    shortcut: '/favicon.ico',
     apple: '/favicon.png',
   },
   alternates: { canonical: SITE_URL },
@@ -127,7 +126,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="vi" className={inter.variable}>
       <head>
         {/* Favicon - required by Google for SERP favicon display */}
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico" />
         <link rel="icon" type="image/png" sizes="512x512" href="/favicon.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png" />
         <meta name="msapplication-TileImage" content="/favicon.png" />
