@@ -27,10 +27,10 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     };
   }
 
-  const title = `${cat.name} - Mua Ngay Tại ${SITE_NAME}`;
+  const title = `${cat.name} Đồng Xoài Bình Phước - Mua Ngay Tại ${SITE_NAME}`;
   const description =
     cat.description ||
-    `Khám phá bộ sưu tập ${cat.name} phong phú tại ${SITE_NAME}, ${STORE.city} ${STORE.province}. Giá tốt, giao hàng toàn quốc, miễn phí vận chuyển.`;
+    `Mua ${cat.name.toLowerCase()} đồng xoài bình phước giá tốt tại ${SITE_NAME}. ${cat.name} phong phú, giao hàng toàn quốc, miễn phí vận chuyển.`;
   const url = `${SITE_URL}/categories/${params.slug}`;
 
   return {

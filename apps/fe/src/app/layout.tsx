@@ -13,7 +13,7 @@ const inter = Inter({
 const SITE_URL = STORE.url;
 const SITE_NAME = STORE.name;
 
-const defaultTitle = `${SITE_NAME} - Nội Thất Giá Tốt Tại ${STORE.city} ${STORE.province}`;
+const defaultTitle = `${SITE_NAME} - Nội Thất Đồng Xoài Bình Phước Giá Tốt`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -61,7 +61,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 5,
+  maximumScale: 3,
   themeColor: '#8B4513',
 };
 
@@ -78,13 +78,15 @@ const localBusinessSchema = {
     height: 60,
   },
   image: `${SITE_URL}${STORE.ogImage}`,
-  description: STORE.description,
+  description: `Nội thất đồng xoài bình phước - ${STORE.description}`,
   address: {
     '@type': 'PostalAddress',
     addressLocality: STORE.city,
     addressRegion: STORE.province,
-    addressCountry: STORE.countryCode,
+    addressCountry: 'VN',
   },
+  telephone: STORE.phone,
+  email: STORE.email,
   areaServed: [
     { '@type': 'State', name: STORE.province },
     { '@type': 'Country', name: STORE.country },
@@ -92,6 +94,20 @@ const localBusinessSchema = {
   priceRange: '₫₫',
   currenciesAccepted: 'VND',
   paymentAccepted: 'Tiền mặt, Chuyển khoản',
+  openingHoursSpecification: [
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+      opens: '07:00',
+      closes: '21:00',
+    },
+  ],
+  sameAs: [STORE.facebook],
+  hasOfferCatalog: {
+    '@type': 'OfferCatalog',
+    name: 'Nội thất đồng xoài bình phước',
+    itemListElement: STORE.categories.map((cat) => ({ '@type': 'Offer', itemOffered: { '@type': 'Product', name: cat } })),
+  },
 };
 
 // JSON-LD: WebSite (Google Sitelinks Search Box)

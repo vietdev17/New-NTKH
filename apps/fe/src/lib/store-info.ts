@@ -27,7 +27,7 @@ export const STORE = {
 
   // SEO
   description:
-    'Nội Thất Đồng Xoài, Nội Thất Bình Phước - Nội Thất Khánh Huyền chuyên cung cấp nội thất gỗ, nhựa giả mây, ga giường, chăn gối đệm, bàn trang điểm, combo phòng ngủ. Giá tốt, giao hàng toàn quốc, miễn phí vận chuyển.',
+    'Nội Thất Đồng Xoài Bình Phước - Nội Thất Khánh Huyền chuyên cung cấp nội thất gỗ, nhựa giả mây, ga giường, chăn gối đệm, bàn trang điểm, combo phòng ngủ. Giá tốt nhất Đồng Xoài, giao hàng toàn quốc, miễn phí vận chuyển Bình Phước.',
   keywords: [
     'noithatkhanhhuyen',
     'noithatkhanhhuyen.com',
@@ -49,6 +49,17 @@ export const STORE = {
     'sofa đồng xoài',
     'sofa bình phước',
     'Khánh Huyền',
+    // Long-tail keywords for SEO
+    'nội thất đồng xoài bình phước giá tốt',
+    'mua nội thất đồng xoài bình phước online',
+    'cửa hàng nội thất đồng xoài bình phước',
+    'nội thất gỗ đồng xoài bình phước giá rẻ',
+    'nội thất phòng ngủ đồng xoài bình phước',
+    'nội thất phòng khách đồng xoài bình phước',
+    'bàn ghế gỗ đồng xoài bình phước',
+    'sofa đồng xoài bình phước giá tốt',
+    'ga giường đồng xoài bình phước',
+    'nội thất trẻ em đồng xoài bình phước',
   ],
 
   // Hình ảnh mặc định cho OG/Social share
