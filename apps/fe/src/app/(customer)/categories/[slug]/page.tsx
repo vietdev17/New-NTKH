@@ -12,7 +12,8 @@ async function getCategory(slug: string) {
     const res = await fetch(`${API_URL}/categories/${slug}`, { next: { revalidate: 3600 } });
     if (!res.ok) return null;
     const json = await res.json();
-    return json.data || json;
+    // API returns { success, data: { category: {...} } }
+    return json.data?.category || json.data || json;
   } catch {
     return null;
   }
@@ -54,7 +55,8 @@ async function getProducts(categorySlug: string) {
     const res = await fetch(`${API_URL}/products?category=${categorySlug}&limit=20`, { next: { revalidate: 3600 } });
     if (!res.ok) return [];
     const json = await res.json();
-    return json.data || [];
+    // API returns { success, data: { items: [...] } }
+    return json.data?.items || json.data || json.items || [];
   } catch {
     return [];
   }
