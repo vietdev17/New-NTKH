@@ -84,6 +84,10 @@ api.interceptors.response.use(
     if (apiResponse?.meta) {
       return { ...response, data: apiResponse.data, meta: apiResponse.meta } as any;
     }
+    // Format: { data: [], pagination: {} }
+    if (apiResponse?.pagination) {
+      return { ...response, data: apiResponse.data, meta: apiResponse.pagination } as any;
+    }
     // Format: { items: [], total, page, limit, totalPages } — items at root
     if (apiResponse?.items !== undefined) {
       return {

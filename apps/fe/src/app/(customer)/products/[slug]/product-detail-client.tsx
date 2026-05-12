@@ -1,5 +1,6 @@
 'use client';
 import { useState, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -13,9 +14,11 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { PriceDisplay } from '@/components/shared/price-display';
 import { ProductCard } from '@/components/customer/product-card';
+import ProductReviewsTab from '@/components/customer/product-reviews-tab';
 import { useProduct, useProducts } from '@/hooks/use-products';
 import { useCartStore } from '@/stores/use-cart-store';
 import { useWishlistStore } from '@/stores/use-wishlist-store';
+import { reviewService } from '@/services/review.service';
 import type { Product, ProductColor, ProductDimension, ProductVariant } from '@/types';
 import { cn, formatPrice } from '@/lib/utils';
 import toast from 'react-hot-toast';
@@ -50,11 +53,20 @@ export default function ProductDetailClient({ params }: { params: { slug: string
   const selectedColor = colors.find((c) => c.id === selectedColorId) || null;
   const selectedDim = dimensions.find((d) => d.id === selectedDimId) || null;
 
-  // Images — prefer color-specific, fallback to product images
+  // Images — prefer color-specific, fallback to product images, combo auto-gallery
   const images = useMemo(() => {
+    if (p?.comboItems?.length > 0) {
+      const comboImages: string[] = [];
+      for (const item of p.comboItems) {
+        if (item.productId?.images?.length) {
+          comboImages.push(...item.productId.images.slice(0, 2));
+        }
+      }
+      return comboImages.length > 0 ? comboImages : p?.images?.length ? p.images : ['/images/placeholder.svg'];
+    }
     if (selectedColor?.images?.length) return selectedColor.images;
     return p?.images?.length ? p.images : ['/images/placeholder.svg'];
-  }, [selectedColor, p?.images]);
+  }, [selectedColor, p?.images, p?.comboItems]);
 
   // Find matching variant
   const activeVariant = useMemo(() => {
@@ -81,6 +93,15 @@ export default function ProductDetailClient({ params }: { params: { slug: string
 
   const wished = p ? isWished(p._id) : false;
   const rating = p?.rating || { average: 0, count: 0 };
+
+  // Fetch actual review stats to override stale denormalized count
+  const { data: reviewStats } = useQuery({
+    queryKey: ['product-review-stats', p?._id],
+    queryFn: () => reviewService.getProductReviewStats(p._id),
+    enabled: !!p?._id,
+  });
+  const actualReviewCount = (reviewStats as any)?.totalReviews;
+  const reviewCount = actualReviewCount ?? rating.count;
   const specs = p?.specifications || {};
   const category = p?.categoryId;
 
@@ -506,6 +527,47 @@ export default function ProductDetailClient({ params }: { params: { slug: string
             </button>
           </div>
 
+          {/* === Combo Items === */}
+          {p.comboItems?.length > 0 && (
+            <div className="bg-primary-50/50 rounded-xl p-4 border border-primary-100">
+              <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <Package className="h-4 w-4 text-primary-600" />
+                Gói combo gồm ({p.comboItems.length} sản phẩm)
+              </h3>
+              <div className="space-y-2">
+                {p.comboItems.map((item: any, i: number) => (
+                  <Link
+                    key={i}
+                    href={`/products/${item.productId?.slug || '#'}`}
+                    className="flex items-center gap-3 bg-white rounded-lg p-2.5 border border-gray-100 hover:border-primary-300 hover:shadow-sm transition-colors"
+                  >
+                    <div className="relative h-12 w-12 rounded-lg overflow-hidden bg-gray-50 shrink-0">
+                      <Image
+                        src={item.productId?.images?.[0] || '/images/placeholder.svg'}
+                        alt={item.productId?.name || 'San pham'}
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate">
+                        {item.productId?.name || 'San pham thanh phan'}
+                      </p>
+                      <p className="text-xs text-gray-500">So luong: {item.quantity}</p>
+                    </div>
+                    {item.note && <p className="text-xs text-gray-400 italic">{item.note}</p>}
+                  </Link>
+                ))}
+              </div>
+              {p.comboDiscountPercent > 0 && (
+                <p className="text-sm text-success-600 font-medium mt-2">
+                  Tiet kiem {p.comboDiscountPercent}% khi mua combo
+                </p>
+              )}
+            </div>
+          )}
+
           {/* === Trust Badges === */}
           <div className="grid grid-cols-3 gap-3 pt-3">
             {[
@@ -533,20 +595,21 @@ export default function ProductDetailClient({ params }: { params: { slug: string
               Bảng Giá ({variants.length})
             </TabsTrigger>
             <TabsTrigger value="reviews" className="rounded-lg">
-              Đánh Giá ({rating.count})
+              Đánh Giá ({reviewCount})
             </TabsTrigger>
           </TabsList>
 
           {/* Description */}
           <TabsContent value="description">
             <div className="bg-white rounded-2xl border border-gray-100 p-6 lg:p-8">
-              <div className={cn('text-gray-700 leading-relaxed whitespace-pre-line', !showFullDesc && 'max-h-80 overflow-hidden relative')}>
-                {p.description}
-                {!showFullDesc && p.description?.length > 500 && (
-                  <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white to-transparent" />
-                )}
-              </div>
-              {p.description?.length > 500 && (
+              <div
+                className={cn('prose prose-sm max-w-none text-gray-700 leading-relaxed', !showFullDesc && 'max-h-80 overflow-hidden relative')}
+                dangerouslySetInnerHTML={{ __html: p.description || '<p>Chưa có mô tả</p>' }}
+              />
+              {!showFullDesc && (p.description?.length || 0) > 500 && (
+                <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white to-transparent" />
+              )}
+              {(p.description?.length || 0) > 500 && (
                 <button
                   onClick={() => setShowFullDesc(!showFullDesc)}
                   className="flex items-center gap-1 text-primary-600 font-medium text-sm mt-4 hover:underline"
@@ -658,33 +721,7 @@ export default function ProductDetailClient({ params }: { params: { slug: string
 
           {/* Reviews */}
           <TabsContent value="reviews">
-            <div className="bg-white rounded-2xl border border-gray-100 p-6 lg:p-8">
-              {rating.count > 0 ? (
-                <div className="flex items-center gap-6 mb-6">
-                  <div className="text-center">
-                    <p className="text-4xl font-bold text-gray-900">{rating.average.toFixed(1)}</p>
-                    <div className="flex items-center gap-0.5 mt-1 justify-center">
-                      {[1, 2, 3, 4, 5].map((s) => (
-                        <Star
-                          key={s}
-                          className={cn(
-                            'h-4 w-4',
-                            s <= Math.round(rating.average) ? 'fill-yellow-400 text-yellow-400' : 'fill-gray-200 text-gray-200'
-                          )}
-                        />
-                      ))}
-                    </div>
-                    <p className="text-sm text-gray-500 mt-1">{rating.count} đánh giá</p>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <Star className="h-12 w-12 text-gray-200 mx-auto mb-3" />
-                  <p className="text-gray-500 font-medium">Chưa có đánh giá nào</p>
-                  <p className="text-sm text-gray-400 mt-1">Hãy là người đầu tiên đánh giá sản phẩm này</p>
-                </div>
-              )}
-            </div>
+            <ProductReviewsTab productId={p._id} productName={p.name} />
           </TabsContent>
         </Tabs>
       </div>

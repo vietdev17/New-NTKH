@@ -5,15 +5,23 @@ import {
 } from '@nestjs/common';
 import { InjectModel, InjectConnection } from '@nestjs/mongoose';
 import { Model, Connection, Types, FilterQuery } from 'mongoose';
-import { Product, ProductDocument, ProductStatus } from './schemas/product.schema';
+import { Product, ProductDocument, ProductStatus, ComboItem } from './schemas/product.schema';
 import { Category, CategoryDocument } from '../categories/schemas/category.schema';
-import { CreateProductDto, CreateColorDto, CreateDimensionDto } from './dto/create-product.dto';
+import { Review, ReviewDocument } from '../reviews/schemas/review.schema';
+import { CreateProductDto, CreateColorDto, CreateDimensionDto, CreateComboItemDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { QueryProductDto } from './dto/query-product.dto';
 import { StockUpdateDto, StockOperation } from './dto/stock-update.dto';
 import { StockItem } from './interfaces/stock-item.interface';
 import { generateSlug } from './helpers/slug.helper';
 import { generateSku } from './helpers/sku.helper';
+import { FakeReviewGeneratorService } from '../reviews/services/fake-review-generator.service';
+import DOMPurify from 'isomorphic-dompurify';
+
+const HTML_SANITIZE_OPTIONS = {
+  ALLOWED_TAGS: ['h2', 'h3', 'h4', 'p', 'br', 'strong', 'em', 'u', 's', 'ul', 'ol', 'li', 'a', 'img', 'blockquote', 'span', 'div', 'table', 'thead', 'tbody', 'tr', 'th', 'td'],
+  ALLOWED_ATTR: ['href', 'target', 'src', 'alt', 'class', 'style', 'colspan', 'rowspan'],
+};
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 20;
@@ -26,59 +34,104 @@ export class ProductsService {
     private productModel: Model<ProductDocument>,
     @InjectModel(Category.name)
     private categoryModel: Model<CategoryDocument>,
+    @InjectModel(Review.name)
+    private reviewModel: Model<ReviewDocument>,
     @InjectConnection()
     private connection: Connection,
+    private fakeReviewGeneratorService: FakeReviewGeneratorService,
   ) {}
 
   // ============================================================
   // CREATE - Tao san pham moi
   // ============================================================
   async create(dto: CreateProductDto): Promise<ProductDocument> {
-    // 1. Kiem tra category ton tai
-    const category = await this.categoryModel.findById(dto.categoryId);
-    if (!category) {
-      throw new NotFoundException(`Danh muc voi ID "${dto.categoryId}" khong ton tai`);
+    const session = await this.connection.startSession();
+
+    try {
+      session.startTransaction();
+
+      // 1. Kiem tra category ton tai
+      const category = await this.categoryModel.findById(dto.categoryId).session(session);
+      if (!category) {
+        throw new NotFoundException(`Danh muc voi ID "${dto.categoryId}" khong ton tai`);
+      }
+
+      // 2. Validate combo items
+      if (dto.comboItems && dto.comboItems.length > 0) {
+        await this.validateComboItems(dto.comboItems);
+        // Auto-compute basePrice if not set
+        if (!dto.basePrice || dto.basePrice === 0) {
+          let totalPrice = 0;
+          for (const item of dto.comboItems) {
+            const component = await this.productModel.findById(item.productId).session(session);
+            if (component) totalPrice += component.basePrice * item.quantity;
+          }
+          dto.basePrice = totalPrice;
+        }
+      }
+
+      // 3. Sanitize description HTML
+      if (dto.description) {
+        dto.description = DOMPurify.sanitize(dto.description, HTML_SANITIZE_OPTIONS);
+      }
+
+      // 4. Tao slug va kiem tra trung
+      let slug = generateSlug(dto.name);
+      slug = await this.ensureUniqueSlug(slug);
+
+      // 5. Gan ID cho colors va dimensions
+      const colors = (dto.colors || []).map((c, i) => ({
+        ...c,
+        id: `C${String(i + 1).padStart(2, '0')}`,
+        priceModifier: c.priceModifier || 0,
+        images: c.images || [],
+        available: c.available !== false,
+      }));
+
+      const dimensions = (dto.dimensions || []).map((d, i) => ({
+        ...d,
+        id: `D${String(i + 1).padStart(2, '0')}`,
+        weight: d.weight || 0,
+        priceModifier: d.priceModifier || 0,
+        available: d.available !== false,
+      }));
+
+      // 6. Tao variants matrix: color x dimension
+      const variants = this.buildVariantsMatrix(
+        colors,
+        dimensions,
+        dto.basePrice,
+        category.slug,
+      );
+
+      // 7. Tao product
+      const product = new this.productModel({
+        ...dto,
+        slug,
+        colors,
+        dimensions,
+        variants,
+      });
+
+      await product.save({ session });
+
+      const syntheticReviews = this.fakeReviewGeneratorService
+        .generateForProduct({ product, category })
+        .map((review) => ({
+          ...review,
+          productId: product._id,
+        }));
+
+      await this.reviewModel.insertMany(syntheticReviews, { session });
+
+      await session.commitTransaction();
+      return product;
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      await session.endSession();
     }
-
-    // 2. Tao slug va kiem tra trung
-    let slug = generateSlug(dto.name);
-    slug = await this.ensureUniqueSlug(slug);
-
-    // 3. Gan ID cho colors va dimensions
-    const colors = (dto.colors || []).map((c, i) => ({
-      ...c,
-      id: `C${String(i + 1).padStart(2, '0')}`, // C01, C02, ...
-      priceModifier: c.priceModifier || 0,
-      images: c.images || [],
-      available: c.available !== false,
-    }));
-
-    const dimensions = (dto.dimensions || []).map((d, i) => ({
-      ...d,
-      id: `D${String(i + 1).padStart(2, '0')}`, // D01, D02, ...
-      weight: d.weight || 0,
-      priceModifier: d.priceModifier || 0,
-      available: d.available !== false,
-    }));
-
-    // 4. Tao variants matrix: color x dimension
-    const variants = this.buildVariantsMatrix(
-      colors,
-      dimensions,
-      dto.basePrice,
-      category.slug,
-    );
-
-    // 5. Tao product
-    const product = new this.productModel({
-      ...dto,
-      slug,
-      colors,
-      dimensions,
-      variants,
-    });
-
-    return product.save();
   }
 
   // ============================================================
@@ -184,7 +237,12 @@ export class ProductsService {
     const product = await this.productModel
       .findOne(query)
       .populate('categoryId', 'name slug image')
-      .lean();
+      .populate({
+        path: 'comboItems.productId',
+        select: 'name slug images basePrice salePrice',
+        match: { isDeleted: false },
+      })
+      .lean({ virtuals: true });
 
     if (!product) {
       throw new NotFoundException(`San pham voi slug "${slug}" khong ton tai`);
@@ -246,12 +304,22 @@ export class ProductsService {
       }
     }
 
+    // Validate combo items
+    if (dto.comboItems && dto.comboItems.length > 0) {
+      await this.validateComboItems(dto.comboItems);
+    }
+
+    // Sanitize description HTML
+    if (dto.description) {
+      dto.description = DOMPurify.sanitize(dto.description, HTML_SANITIZE_OPTIONS);
+    }
+
     // Cap nhat cac truong co ban
     const basicFields = [
       'name', 'shortDescription', 'description', 'categoryId',
-      'comboCategoryId', 'basePrice', 'costPrice', 'brand',
-      'material', 'origin', 'images', 'specifications', 'status',
-      'tags', 'seo',
+      'comboCategoryId', 'basePrice', 'costPrice', 'salePrice',
+      'brand', 'material', 'origin', 'images', 'specifications',
+      'status', 'comboItems', 'comboDiscountPercent', 'tags', 'seo',
     ];
 
     for (const field of basicFields) {
@@ -721,6 +789,34 @@ export class ProductsService {
    *
    * SKU format: {CATEGORY_PREFIX}-{COLOR_ID}-{DIM_ID}-{RANDOM}
    */
+  // ============================================================
+  // COMBO VALIDATION
+  // ============================================================
+  private async validateComboItems(comboItems: CreateComboItemDto[]): Promise<void> {
+    for (const item of comboItems) {
+      const component = await this.productModel.findOne({
+        _id: item.productId,
+        isDeleted: false,
+        status: ProductStatus.ACTIVE,
+      });
+
+      if (!component) {
+        throw new BadRequestException(
+          `San pham thanh phan ID "${item.productId}" khong ton tai hoac khong kha dung`,
+        );
+      }
+
+      if (component.comboItems && component.comboItems.length > 0) {
+        throw new BadRequestException(
+          `San pham "${component.name}" la san pham combo, khong the la thanh phan cua combo khac`,
+        );
+      }
+    }
+  }
+
+  // ============================================================
+  // BUILD VARIANTS MATRIX
+  // ============================================================
   private buildVariantsMatrix(
     colors: any[],
     dimensions: any[],

@@ -63,6 +63,44 @@ export const userService = {
     const { data } = await api.post('/customers', payload);
     return data;
   },
+  updateCustomer: async (id: string, payload: { fullName?: string; phone?: string; email?: string; isActive?: boolean }): Promise<User> => {
+    const { data } = await api.patch(`/customers/${id}`, payload);
+    return data;
+  },
+  getCustomerStats: async (id: string) => {
+    const { data } = await api.get(`/customers/${id}/stats`);
+    return data;
+  },
+  getCustomerOrders: async (id: string, params?: { page?: number; limit?: number }) => {
+    const response = await api.get(`/customers/${id}/orders`, { params });
+    return { items: response.data, meta: (response as any).meta || {} };
+  },
+  // Admin address management
+  addCustomerAddress: async (customerId: string, address: any) => {
+    const { data } = await api.post(`/customers/${customerId}/addresses`, address);
+    return data;
+  },
+  updateCustomerAddress: async (customerId: string, index: number, address: any) => {
+    const { data } = await api.patch(`/customers/${customerId}/addresses/${index}`, address);
+    return data;
+  },
+  deleteCustomerAddress: async (customerId: string, index: number) => {
+    const { data } = await api.delete(`/customers/${customerId}/addresses/${index}`);
+    return data;
+  },
+  setCustomerDefaultAddress: async (customerId: string, index: number) => {
+    const { data } = await api.patch(`/customers/${customerId}/addresses/${index}/default`);
+    return data;
+  },
+  // Loyalty
+  addLoyaltyPoints: async (customerId: string, points: number, reason: string) => {
+    const { data } = await api.post(`/customers/${customerId}/loyalty/add`, { points, reason });
+    return data;
+  },
+  deductLoyaltyPoints: async (customerId: string, points: number, reason: string) => {
+    const { data } = await api.post(`/customers/${customerId}/loyalty/deduct`, { points, reason });
+    return data;
+  },
   // Staff
   getAllStaff: async (params?: QueryParams): Promise<{ data: User[]; meta: any }> => {
     const response = await api.get('/users/staff', { params });

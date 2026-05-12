@@ -5,9 +5,11 @@ import {
   IsOptional,
   IsArray,
   IsEnum,
+  IsInt,
   ValidateNested,
   IsMongoId,
   Min,
+  Max,
   MaxLength,
   IsBoolean,
   Matches,
@@ -113,6 +115,23 @@ export class SeoMetaDto {
   metaKeywords?: string[];
 }
 
+// ----- Sub DTO: ComboItem -----
+export class CreateComboItemDto {
+  @ApiProperty({ description: 'ID san pham thanh phan' })
+  @IsMongoId()
+  productId: string;
+
+  @ApiProperty({ description: 'So luong san pham nay trong combo', minimum: 1 })
+  @IsInt()
+  @Min(1)
+  quantity: number;
+
+  @ApiPropertyOptional({ description: 'Ghi chu' })
+  @IsString()
+  @IsOptional()
+  note?: string;
+}
+
 // ----- Main DTO -----
 export class CreateProductDto {
   @ApiProperty({ description: 'Ten san pham', maxLength: 300 })
@@ -151,6 +170,12 @@ export class CreateProductDto {
   @IsOptional()
   @Min(0)
   costPrice?: number;
+
+  @ApiPropertyOptional({ description: 'Gia khuyen mai (VND)', minimum: 0 })
+  @IsNumber()
+  @IsOptional()
+  @Min(0)
+  salePrice?: number;
 
   @ApiPropertyOptional({ description: 'Thuong hieu' })
   @IsString()
@@ -208,4 +233,18 @@ export class CreateProductDto {
   @Type(() => SeoMetaDto)
   @IsOptional()
   seo?: SeoMetaDto;
+
+  @ApiPropertyOptional({ description: 'San pham combo - danh sach thanh phan', type: [CreateComboItemDto] })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateComboItemDto)
+  @IsOptional()
+  comboItems?: CreateComboItemDto[];
+
+  @ApiPropertyOptional({ description: 'Giam gia combo (%)', minimum: 0, maximum: 100 })
+  @IsNumber()
+  @IsOptional()
+  @Min(0)
+  @Max(100)
+  comboDiscountPercent?: number;
 }

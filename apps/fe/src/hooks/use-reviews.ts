@@ -21,21 +21,21 @@ export function useCreateReview() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: reviewService.createReview,
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['reviews'] }); toast.success('Gui danh gia thanh cong!'); },
-    onError: (e: any) => toast.error(e.message),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['reviews'] }); toast.success('Gửi đánh giá thành công!'); },
+    onError: (e: any) => toast.error(e?.message || 'Gửi đánh giá thất bại'),
   });
 }
 
 export function useAdminReviews(params?: QueryParams) {
-  return useQuery({ queryKey: ['admin', 'reviews', params], queryFn: () => reviewService.getAllReviews(params) });
+  return useQuery({ queryKey: ['admin', 'reviews', params], queryFn: () => reviewService.getReviews(params) });
 }
 
 export function useModerateReview() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, status, adminReply }: { id: string; status: 'approved' | 'rejected'; adminReply?: string }) =>
-      reviewService.moderateReview(id, status, adminReply),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin', 'reviews'] }); toast.success('Cap nhat thanh cong'); },
-    onError: (e: any) => toast.error(e.message),
+    mutationFn: ({ id, status, adminNote }: { id: string; status: 'approved' | 'rejected' | 'flagged'; adminNote?: string }) =>
+      reviewService.moderateReview(id, status, adminNote),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin', 'reviews'] }); toast.success('Cập nhật thành công'); },
+    onError: (e: any) => toast.error(e?.message || 'Thao tác thất bại'),
   });
 }

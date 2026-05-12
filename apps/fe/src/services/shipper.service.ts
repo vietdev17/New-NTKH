@@ -82,4 +82,12 @@ export const shipperService = {
   adminAssignOrder: async (shipperId: string, orderId: string): Promise<void> => {
     await api.post(`/admin/shippers/${shipperId}/assign-order/${orderId}`);
   },
+  getShipperOrders: async (shipperId: string, params?: QueryParams): Promise<{ data: Order[]; meta: any }> => {
+    const response = await api.get(`/shipper/orders/my-orders`, { params });
+    return { data: response.data, meta: (response as any).meta };
+  },
+  getShipperStats: async (shipperId: string, period?: string): Promise<any> => {
+    const { data } = await api.get(`/shipper/stats`, { params: { period } });
+    return data;
+  },
 };

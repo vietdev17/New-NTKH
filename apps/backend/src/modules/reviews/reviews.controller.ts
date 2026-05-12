@@ -67,6 +67,17 @@ export class ReviewsController {
   // ADMIN ENDPOINTS (static routes before :id)
   // ============================================================
 
+  // GET /reviews — admin list all reviews with status filter
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.STAFF)
+  @Get()
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Danh sach tat ca danh gia (Admin/Manager/Staff)' })
+  @ApiResponse({ status: 200, description: 'Danh sach danh gia co phan trang' })
+  async getAllReviews(@Query() query: QueryReviewDto) {
+    return this.reviewsService.getAllReviews(query);
+  }
+
   // GET /reviews/pending
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.STAFF)

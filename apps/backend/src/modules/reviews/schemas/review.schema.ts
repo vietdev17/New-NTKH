@@ -24,11 +24,27 @@ export class Review extends Document {
   @Prop({ type: Types.ObjectId, ref: 'Product', required: true })
   productId: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  userId: Types.ObjectId;
+  @Prop({ type: Types.ObjectId, ref: 'User' })
+  userId?: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'Order', required: true })
-  orderId: Types.ObjectId;
+  @Prop({ type: Types.ObjectId, ref: 'Order' })
+  orderId?: Types.ObjectId;
+
+  @Prop({ default: false })
+  isSynthetic: boolean;
+
+  @Prop({ trim: true })
+  reviewerName?: string;
+
+  @Prop({ trim: true })
+  reviewerAvatar?: string;
+
+  @Prop({
+    type: String,
+    enum: ['user_purchase', 'system_fake'],
+    default: 'user_purchase',
+  })
+  source: 'user_purchase' | 'system_fake';
 
   @Prop({ trim: true })
   orderItemSku?: string;
@@ -83,5 +99,6 @@ ReviewSchema.index({ productId: 1, status: 1 });
 ReviewSchema.index({ userId: 1 });
 ReviewSchema.index({ orderId: 1 });
 ReviewSchema.index({ rating: 1 });
+ReviewSchema.index({ isSynthetic: 1 });
 ReviewSchema.index({ isDeleted: 1 });
 ReviewSchema.index({ createdAt: -1 });

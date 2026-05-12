@@ -5,7 +5,7 @@ import {
   UploadedFile,
   UploadedFileSchema,
 } from './schemas/uploaded-file.schema';
-import { GoogleDriveService } from './google-drive.service';
+import { CloudinaryService } from './cloudinary.service';
 import { UploadService } from './upload.service';
 import { UploadController } from './upload.controller';
 import { multerConfig } from './multer.config';
@@ -18,7 +18,7 @@ import { multerConfig } from './multer.config';
     MulterModule.register(multerConfig),
   ],
   controllers: [UploadController],
-  providers: [GoogleDriveService, UploadService],
-  exports: [UploadService, GoogleDriveService],
+  providers: [CloudinaryService, UploadService],
+  exports: [UploadService, CloudinaryService],
 })
 export class UploadModule {}

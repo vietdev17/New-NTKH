@@ -49,8 +49,8 @@ export class UploadController {
         originalName: data.originalName,
         mimeType: data.mimeType,
         size: data.size,
-        url: `https://lh3.googleusercontent.com/d/${data.googleDriveFileId}`,
-        googleDriveFileId: data.googleDriveFileId,
+        url: data.cloudinaryUrl,
+        publicId: data.cloudinaryPublicId,
         category: data.category,
       },
     };
@@ -77,8 +77,8 @@ export class UploadController {
       originalName: file.originalName,
       mimeType: file.mimeType,
       size: file.size,
-      url: `https://lh3.googleusercontent.com/d/${file.googleDriveFileId}`,
-      googleDriveFileId: file.googleDriveFileId,
+      url: file.cloudinaryUrl,
+      publicId: file.cloudinaryPublicId,
       category: file.category,
     }));
 
@@ -107,8 +107,8 @@ export class UploadController {
       message: 'Upload avatar thanh cong',
       data: {
         _id: data._id,
-        url: `https://lh3.googleusercontent.com/d/${data.googleDriveFileId}`,
-        googleDriveFileId: data.googleDriveFileId,
+        url: data.cloudinaryUrl,
+        publicId: data.cloudinaryPublicId,
       },
     };
   }
@@ -132,8 +132,8 @@ export class UploadController {
       message: 'Upload anh chung minh giao hang thanh cong',
       data: {
         _id: data._id,
-        url: `https://lh3.googleusercontent.com/d/${data.googleDriveFileId}`,
-        googleDriveFileId: data.googleDriveFileId,
+        url: data.cloudinaryUrl,
+        publicId: data.cloudinaryPublicId,
       },
     };
   }
@@ -157,8 +157,8 @@ export class UploadController {
       message: 'Upload anh danh gia thanh cong',
       data: {
         _id: data._id,
-        url: `https://lh3.googleusercontent.com/d/${data.googleDriveFileId}`,
-        googleDriveFileId: data.googleDriveFileId,
+        url: data.cloudinaryUrl,
+        publicId: data.cloudinaryPublicId,
       },
     };
   }
@@ -182,8 +182,8 @@ export class UploadController {
       message: 'Upload banner thanh cong',
       data: {
         _id: data._id,
-        url: `https://lh3.googleusercontent.com/d/${data.googleDriveFileId}`,
-        googleDriveFileId: data.googleDriveFileId,
+        url: data.cloudinaryUrl,
+        publicId: data.cloudinaryPublicId,
         category: data.category,
       },
     };

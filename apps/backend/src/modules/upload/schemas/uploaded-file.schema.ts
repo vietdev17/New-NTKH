@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, HydratedDocument, Types } from 'mongoose';
 
-// Inline enum to avoid monorepo path resolution issues
 export enum UploadCategory {
   PRODUCT = 'product',
   AVATAR = 'avatar',
@@ -23,16 +22,13 @@ export class UploadedFile extends Document {
   mimeType: string;
 
   @Prop({ required: true, min: 0 })
-  size: number; // bytes
+  size: number;
 
   @Prop({ required: true, trim: true })
-  googleDriveFileId: string;
+  cloudinaryPublicId: string;
 
-  @Prop({ trim: true })
-  googleDriveWebViewUrl?: string;
-
-  @Prop({ trim: true })
-  googleDriveWebContentUrl?: string;
+  @Prop({ required: true, trim: true })
+  cloudinaryUrl: string;
 
   @Prop({ type: Types.ObjectId, ref: 'User' })
   uploadedBy?: Types.ObjectId;
@@ -49,11 +45,9 @@ export class UploadedFile extends Document {
 }
 
 export type UploadedFileDocument = HydratedDocument<UploadedFile>;
-
 export const UploadedFileSchema = SchemaFactory.createForClass(UploadedFile);
 
-// Indexes
-UploadedFileSchema.index({ googleDriveFileId: 1 });
+UploadedFileSchema.index({ cloudinaryPublicId: 1 });
 UploadedFileSchema.index({ uploadedBy: 1 });
 UploadedFileSchema.index({ category: 1 });
 UploadedFileSchema.index({ isDeleted: 1 });

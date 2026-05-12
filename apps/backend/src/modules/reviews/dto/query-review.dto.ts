@@ -18,6 +18,11 @@ export class QueryReviewDto {
   @Max(50)
   limit?: number = 10;
 
+  @ApiPropertyOptional({ description: 'Loc trang thai: pending | approved | rejected | flagged' })
+  @IsOptional()
+  @IsString()
+  status?: string;
+
   @ApiPropertyOptional({ description: 'Loc theo so sao (1-5)', minimum: 1, maximum: 5 })
   @IsOptional()
   @Type(() => Number)

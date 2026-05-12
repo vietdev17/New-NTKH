@@ -12,7 +12,7 @@ import {
   UploadedFileDocument,
   UploadCategory,
 } from './schemas/uploaded-file.schema';
-import { GoogleDriveService } from './google-drive.service';
+import { CloudinaryService } from './cloudinary.service';
 import { QueryUploadDto } from './dto/query-upload.dto';
 
 @Injectable()
@@ -22,62 +22,41 @@ export class UploadService {
   constructor(
     @InjectModel(UploadedFile.name)
     private uploadedFileModel: Model<UploadedFileDocument>,
-    private readonly googleDriveService: GoogleDriveService,
+    private readonly cloudinaryService: CloudinaryService,
   ) {}
 
-  // ===== UPLOAD ANH SAN PHAM (ADMIN) =====
   async uploadProductImage(
     file: Express.Multer.File,
     userId: string,
   ): Promise<UploadedFileDocument> {
     this.validateFile(file);
-    return this.processUpload(
-      file,
-      userId,
-      UploadCategory.PRODUCT,
-    );
+    return this.processUpload(file, userId, UploadCategory.PRODUCT);
   }
 
-  // ===== UPLOAD AVATAR (JWT USER) =====
   async uploadAvatar(
     file: Express.Multer.File,
     userId: string,
   ): Promise<UploadedFileDocument> {
     this.validateFile(file);
-    return this.processUpload(
-      file,
-      userId,
-      UploadCategory.AVATAR,
-    );
+    return this.processUpload(file, userId, UploadCategory.AVATAR);
   }
 
-  // ===== UPLOAD ANH CHUNG MINH GIAO HANG (SHIPPER) =====
   async uploadDeliveryProof(
     file: Express.Multer.File,
     userId: string,
   ): Promise<UploadedFileDocument> {
     this.validateFile(file);
-    return this.processUpload(
-      file,
-      userId,
-      UploadCategory.PROOF,
-    );
+    return this.processUpload(file, userId, UploadCategory.PROOF);
   }
 
-  // ===== UPLOAD ANH DANH GIA (CUSTOMER) =====
   async uploadReviewImage(
     file: Express.Multer.File,
     userId: string,
   ): Promise<UploadedFileDocument> {
     this.validateFile(file);
-    return this.processUpload(
-      file,
-      userId,
-      UploadCategory.REVIEW,
-    );
+    return this.processUpload(file, userId, UploadCategory.REVIEW);
   }
 
-  // ===== UPLOAD BANNER (ADMIN) =====
   async uploadBanner(
     file: Express.Multer.File,
     userId: string,
@@ -86,7 +65,6 @@ export class UploadService {
     return this.processUpload(file, userId, UploadCategory.BANNER);
   }
 
-  // ===== UPLOAD NHIEU FILE SAN PHAM (ADMIN, TOI DA 10) =====
   async uploadProductImages(
     files: Express.Multer.File[],
     userId: string,
@@ -96,15 +74,11 @@ export class UploadService {
     }
 
     if (files.length > 10) {
-      throw new BadRequestException(
-        'Toi da 10 file moi lan upload',
-      );
+      throw new BadRequestException('Toi da 10 file moi lan upload');
     }
 
-    // Validate tat ca file truoc khi upload
     files.forEach((file) => this.validateFile(file));
 
-    // Upload song song
     const results = await Promise.all(
       files.map((file) =>
         this.processUpload(file, userId, UploadCategory.PRODUCT),
@@ -114,7 +88,6 @@ export class UploadService {
     return results;
   }
 
-  // ===== LAY FILE THEO CATEGORY =====
   async getFilesByCategory(query: QueryUploadDto) {
     const { category, page = 1, limit = 20 } = query;
     const skip = (page - 1) * limit;
@@ -146,7 +119,6 @@ export class UploadService {
     };
   }
 
-  // ===== XOA FILE (KIEM TRA OWNERSHIP) =====
   async deleteUpload(
     fileId: string,
     userId: string,
@@ -162,19 +134,12 @@ export class UploadService {
       throw new BadRequestException('File da bi xoa truoc do');
     }
 
-    // Kiem tra quyen xoa: chi nguoi upload hoac admin
     if (!isAdmin && file.uploadedBy?.toString() !== userId) {
-      throw new ForbiddenException(
-        'Ban khong co quyen xoa file nay',
-      );
+      throw new ForbiddenException('Ban khong co quyen xoa file nay');
     }
 
-    // Xoa tren Google Drive
-    await this.googleDriveService.deleteFile(
-      file.googleDriveFileId,
-    );
+    await this.cloudinaryService.deleteFile(file.cloudinaryPublicId);
 
-    // Soft delete trong DB
     file.isDeleted = true;
     await file.save();
 
@@ -183,27 +148,20 @@ export class UploadService {
     );
   }
 
-  // ===== LOGIC UPLOAD CHUNG =====
   private async processUpload(
     file: Express.Multer.File,
     userId: string,
     category: UploadCategory,
   ): Promise<UploadedFileDocument> {
-    // Upload len Google Drive
-    const driveResult = await this.googleDriveService.uploadFile(
-      file,
-      category,
-    );
+    const result = await this.cloudinaryService.uploadFile(file, category);
 
-    // Luu metadata vao MongoDB
     const uploadedFile = new this.uploadedFileModel({
       fileName: `${Date.now()}-${file.originalname.replace(/[^a-zA-Z0-9.\-_]/g, '_')}`,
       originalName: file.originalname,
       mimeType: file.mimetype,
       size: file.size,
-      googleDriveFileId: driveResult.fileId,
-      googleDriveWebViewUrl: driveResult.webViewUrl,
-      googleDriveWebContentUrl: driveResult.webContentUrl,
+      cloudinaryPublicId: result.publicId,
+      cloudinaryUrl: result.secureUrl,
       uploadedBy: new Types.ObjectId(userId),
       category,
       isDeleted: false,
@@ -212,19 +170,17 @@ export class UploadService {
     await uploadedFile.save();
 
     this.logger.log(
-      `Upload success: ${file.originalname} -> ${driveResult.fileId} (${category})`,
+      `Upload success: ${file.originalname} -> ${result.publicId} (${category})`,
     );
 
     return uploadedFile;
   }
 
-  // ===== VALIDATE FILE =====
   private validateFile(file: Express.Multer.File): void {
     if (!file) {
       throw new BadRequestException('File la bat buoc');
     }
 
-    // Kiem tra MIME type (phong ngua truong hop Multer filter bi bypass)
     const allowedMimes = [
       'image/jpeg',
       'image/png',
@@ -237,7 +193,6 @@ export class UploadService {
       );
     }
 
-    // Kiem tra kich thuoc (5MB)
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
       throw new BadRequestException(

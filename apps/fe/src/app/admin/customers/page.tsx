@@ -1,15 +1,16 @@
 'use client';
+
 import Link from 'next/link';
 import { Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { DataTable } from '@/components/shared/data-table';
 import { PaginationControl } from '@/components/shared/pagination-control';
 import { SearchInput } from '@/components/shared/search-input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useQuery } from '@tanstack/react-query';
 import { userService } from '@/services/user.service';
-import { formatDate } from '@/lib/utils';
-import { getInitials } from '@/lib/utils';
+import { formatDate, formatPrice, getInitials } from '@/lib/utils';
 import { useState } from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
 
@@ -37,9 +38,14 @@ export default function AdminCustomersPage() {
               {getInitials(row.original.fullName)}
             </AvatarFallback>
           </Avatar>
-          <div>
-            <p className="font-medium text-sm">{row.original.fullName}</p>
-            <p className="text-xs text-gray-400">{row.original.email}</p>
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5">
+              <p className="font-medium text-sm truncate">{row.original.fullName}</p>
+              {row.original.isActive === false && (
+                <Badge variant="destructive" className="text-[9px] px-1 py-0">Khóa</Badge>
+              )}
+            </div>
+            <p className="text-xs text-gray-400 truncate">{row.original.email}</p>
           </div>
         </div>
       ),
@@ -52,11 +58,20 @@ export default function AdminCustomersPage() {
     {
       accessorKey: 'totalOrders',
       header: 'Đơn hàng',
-      cell: ({ row }) => <span>{row.original.totalOrders || 0}</span>,
+      cell: ({ row }) => (
+        <span className="font-medium">{row.original.totalOrders || 0}</span>
+      ),
+    },
+    {
+      accessorKey: 'totalSpent',
+      header: 'Tổng chi tiêu',
+      cell: ({ row }) => (
+        <span className="text-green-600 font-medium">{formatPrice(row.original.totalSpent || 0)}</span>
+      ),
     },
     {
       accessorKey: 'loyaltyPoints',
-      header: 'Điểm tích lũy',
+      header: 'Điểm',
       cell: ({ row }) => (
         <span className="text-primary-600 font-medium">{(row.original.loyaltyPoints || 0).toLocaleString()}</span>
       ),
@@ -64,7 +79,7 @@ export default function AdminCustomersPage() {
     {
       accessorKey: 'createdAt',
       header: 'Ngày tham gia',
-      cell: ({ row }) => <span className="text-gray-500">{formatDate(row.original.createdAt)}</span>,
+      cell: ({ row }) => <span className="text-gray-500 text-xs">{formatDate(row.original.createdAt)}</span>,
     },
     {
       id: 'actions',
@@ -82,7 +97,7 @@ export default function AdminCustomersPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold">Khách Hàng</h1>
+        <h1 className="text-2xl font-bold">Khách hàng</h1>
         <p className="text-sm text-gray-500 mt-0.5">{meta?.total || 0} khách hàng</p>
       </div>
 

@@ -13,6 +13,9 @@ apps/fe/.turbo/
 .env.local
 .env.*.local
 
+# Google Service Account keys
+*-service-account.json
+
 # IDE
 .idea/
 .vscode/

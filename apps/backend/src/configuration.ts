@@ -15,12 +15,10 @@ export default () => ({
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     redirectUri: process.env.GOOGLE_REDIRECT_URI,
   },
-  googleDrive: {
-    redirectUri: process.env.GOOGLE_DRIVE_REDIRECT_URI,
-    folderId: process.env.GOOGLE_DRIVE_FOLDER_ID,
-    clientId: process.env.GOOGLE_DRIVE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_DRIVE_CLIENT_SECRET,
-    refreshToken: process.env.GOOGLE_DRIVE_REFRESH_TOKEN,
+  cloudinary: {
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+    apiKey: process.env.CLOUDINARY_API_KEY,
+    apiSecret: process.env.CLOUDINARY_API_SECRET,
   },
   frontend: {
     url: process.env.FRONTEND_URL || 'http://localhost:3000',

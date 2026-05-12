@@ -15,8 +15,9 @@ export default function EditProductPage() {
   const updateProduct = useUpdateProduct();
 
   const handleSubmit = async (data: any) => {
+    const { _id, __v, createdAt, updatedAt, isDeleted, viewCount, totalSold, seo, variants, tags, slug, ...payload } = data;
     await new Promise<void>((resolve, reject) => {
-      updateProduct.mutate({ id, data }, {
+      updateProduct.mutate({ id, data: payload }, {
         onSuccess: () => {
           toast.success('Cập nhật thành công');
           router.push('/admin/products');

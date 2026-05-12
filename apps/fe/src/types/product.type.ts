@@ -31,6 +31,19 @@ export interface ProductVariant {
   image?: string;
 }
 
+export interface ComboItem {
+  productId: string | {
+    _id: string;
+    name: string;
+    slug: string;
+    images: string[];
+    basePrice: number;
+    salePrice?: number;
+  };
+  quantity: number;
+  note?: string;
+}
+
 export interface Product {
   _id: string;
   name: string;
@@ -56,7 +69,9 @@ export interface Product {
   isFeatured?: boolean;
   isDeleted?: boolean;
   tags: string[];
-  comboItems?: any[];
+  comboItems?: ComboItem[];
+  comboDiscountPercent?: number;
+  stock?: number;
   createdAt: string;
   updatedAt: string;
 }

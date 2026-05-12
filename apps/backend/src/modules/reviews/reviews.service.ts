@@ -28,6 +28,26 @@ export class ReviewsService {
     private orderModel: Model<OrderDocument>,
   ) {}
 
+  private normalizeReviewAuthor<T extends Record<string, any>>(review: T): T {
+    if (review.userId || !review.isSynthetic) {
+      return review;
+    }
+
+    return {
+      ...review,
+      userId: {
+        _id: null,
+        fullName: review.reviewerName || 'Khách hàng',
+        email: '',
+        avatar: review.reviewerAvatar || '',
+      },
+    };
+  }
+
+  private normalizeReviewAuthors<T extends Record<string, any>>(reviews: T[]): T[] {
+    return reviews.map((review) => this.normalizeReviewAuthor(review));
+  }
+
   // ============================================================
   // CREATE - Tao danh gia moi
   // ============================================================
@@ -44,7 +64,7 @@ export class ReviewsService {
     // 2. Kiem tra don hang ton tai va thuoc ve user nay
     const order = await this.orderModel.findOne({
       _id: dto.orderId,
-      userId: new Types.ObjectId(userId),
+      customerId: new Types.ObjectId(userId),
     });
     if (!order) {
       throw new NotFoundException(
@@ -161,7 +181,7 @@ export class ReviewsService {
     ]);
 
     return {
-      items: items as ReviewDocument[],
+      items: this.normalizeReviewAuthors(items as any) as ReviewDocument[],
       total,
       page,
       limit,
@@ -199,7 +219,7 @@ export class ReviewsService {
       throw new NotFoundException(`Danh gia voi ID "${id}" khong ton tai`);
     }
 
-    return review as ReviewDocument;
+    return this.normalizeReviewAuthor(review as any) as ReviewDocument;
   }
 
   // ============================================================
@@ -210,7 +230,7 @@ export class ReviewsService {
     if (!review) {
       throw new NotFoundException(`Danh gia voi ID "${id}" khong ton tai`);
     }
-    if (review.userId.toString() !== userId) {
+    if (!review.userId || review.userId.toString() !== userId) {
       throw new ForbiddenException('Ban khong co quyen cap nhat danh gia nay');
     }
     if (review.status !== ReviewStatus.PENDING) {
@@ -238,7 +258,7 @@ export class ReviewsService {
     if (!review) {
       throw new NotFoundException(`Danh gia voi ID "${id}" khong ton tai`);
     }
-    if (review.userId.toString() !== userId) {
+    if (!review.userId || review.userId.toString() !== userId) {
       throw new ForbiddenException('Ban khong co quyen xoa danh gia nay');
     }
 
@@ -317,7 +337,7 @@ export class ReviewsService {
         `Danh gia voi ID "${reviewId}" khong ton tai hoac chua duoc duyet`,
       );
     }
-    if (review.userId.toString() === userId) {
+    if (review.userId && review.userId.toString() === userId) {
       throw new BadRequestException('Ban khong the vote cho danh gia cua chinh minh');
     }
 
@@ -393,6 +413,51 @@ export class ReviewsService {
   }
 
   // ============================================================
+  // GET ALL REVIEWS - Admin: danh sach tat ca (co filter status)
+  // ============================================================
+  async getAllReviews(query: QueryReviewDto): Promise<{
+    items: ReviewDocument[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
+    const { page = 1, limit = 20, status, rating } = query;
+    const skip = (page - 1) * limit;
+
+    const filter: FilterQuery<Review> = { isDeleted: false };
+
+    if (status && status !== 'all') {
+      filter.status = status as any;
+    }
+
+    if (rating) {
+      filter.rating = rating;
+    }
+
+    const [items, total] = await Promise.all([
+      this.reviewModel
+        .find(filter)
+        .populate('userId', 'fullName email avatar')
+        .populate('productId', 'name slug images')
+        .populate('orderId', 'orderCode')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      this.reviewModel.countDocuments(filter),
+    ]);
+
+    return {
+      items: this.normalizeReviewAuthors(items as any) as ReviewDocument[],
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
+  // ============================================================
   // GET PENDING REVIEWS - Admin: lay danh gia cho duyet
   // ============================================================
   async getPendingReviews(query: QueryReviewDto): Promise<{
@@ -424,7 +489,7 @@ export class ReviewsService {
     ]);
 
     return {
-      items: items as ReviewDocument[],
+      items: this.normalizeReviewAuthors(items as any) as ReviewDocument[],
       total,
       page,
       limit,
@@ -450,7 +515,7 @@ export class ReviewsService {
     // 1. Tim tat ca don hang da giao chua san pham nay
     const deliveredOrders = await this.orderModel
       .find({
-        userId: new Types.ObjectId(userId),
+        customerId: new Types.ObjectId(userId),
         status: OrderStatus.DELIVERED,
         'items.productId': new Types.ObjectId(productId),
       })
@@ -474,14 +539,14 @@ export class ReviewsService {
       .select('orderId')
       .lean();
 
-    const reviewedSet = new Set(reviewedOrderIds.map((r) => r.orderId.toString()));
+    const reviewedSet = new Set(reviewedOrderIds.map((r: any) => r.orderId?.toString()));
 
     // 3. Loc ra cac don hang chua review
     const eligibleOrders = deliveredOrders
-      .filter((order) => !reviewedSet.has(order._id.toString()))
-      .map((order) => ({
+      .filter((order: any) => !reviewedSet.has(order._id.toString()))
+      .map((order: any) => ({
         orderId: order._id.toString(),
-        orderCode: (order as any).orderCode,
+        orderCode: order.orderCode,
       }));
 
     if (eligibleOrders.length === 0) {

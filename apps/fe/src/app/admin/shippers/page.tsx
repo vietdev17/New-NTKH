@@ -1,17 +1,31 @@
 'use client';
+
 import { useState } from 'react';
 import { Eye } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { DataTable } from '@/components/shared/data-table';
 import { PaginationControl } from '@/components/shared/pagination-control';
 import { SearchInput } from '@/components/shared/search-input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useQuery } from '@tanstack/react-query';
 import { shipperService } from '@/services/shipper.service';
-import { formatDate } from '@/lib/utils';
-import { getInitials } from '@/lib/utils';
+import { formatDate, getInitials } from '@/lib/utils';
+import { SHIPPER_STATUS_LABELS } from '@/lib/constants';
 import { type ColumnDef } from '@tanstack/react-table';
+
+const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'secondary'> = {
+  available: 'success',
+  busy: 'warning',
+  offline: 'secondary',
+};
+
+const VEHICLE_LABELS: Record<string, string> = {
+  motorcycle: 'Xe máy',
+  car: 'Ô tô',
+  van: 'Xe tải',
+};
 
 export default function AdminShippersPage() {
   const [page, setPage] = useState(1);
@@ -36,9 +50,9 @@ export default function AdminShippersPage() {
               {getInitials(row.original.fullName)}
             </AvatarFallback>
           </Avatar>
-          <div>
-            <p className="font-medium text-sm">{row.original.fullName}</p>
-            <p className="text-xs text-gray-400">{row.original.email}</p>
+          <div className="min-w-0">
+            <p className="font-medium text-sm truncate">{row.original.fullName}</p>
+            <p className="text-xs text-gray-400 truncate">{row.original.email}</p>
           </div>
         </div>
       ),
@@ -46,31 +60,50 @@ export default function AdminShippersPage() {
     {
       accessorKey: 'phone',
       header: 'Điện thoại',
-      cell: ({ row }) => <span>{row.original.phone || '—'}</span>,
+      cell: ({ row }) => <span className="text-gray-600">{row.original.phone || '—'}</span>,
     },
     {
       accessorKey: 'vehicleType',
       header: 'Phương tiện',
-      cell: ({ row }) => <span className="capitalize">{row.original.vehicleType || '—'}</span>,
-    },
-    {
-      accessorKey: 'totalDeliveries',
-      header: 'Đã giao',
-      cell: ({ row }) => <span>{row.original.totalDeliveries || 0}</span>,
-    },
-    {
-      accessorKey: 'isAvailable',
-      header: 'Trạng thái',
       cell: ({ row }) => (
-        <span className={`text-xs px-2 py-0.5 rounded-full ${row.original.isAvailable ? 'bg-success-100 text-success-700' : 'bg-gray-100 text-gray-500'}`}>
-          {row.original.isAvailable ? 'Sẵn sàng' : 'Bận'}
+        <span className="text-sm">
+          {VEHICLE_LABELS[row.original.vehicleType] || row.original.vehicleType || '—'}
+          {row.original.licensePlate && (
+            <span className="text-gray-400 ml-1">({row.original.licensePlate})</span>
+          )}
         </span>
       ),
     },
     {
+      accessorKey: 'activeOrders',
+      header: 'Đang giao',
+      cell: ({ row }) => (
+        <span className="font-medium text-orange-600">{row.original.activeOrders || 0}</span>
+      ),
+    },
+    {
+      accessorKey: 'deliveredOrders',
+      header: 'Đã giao',
+      cell: ({ row }) => (
+        <span className="font-medium text-green-600">{row.original.deliveredOrders || 0}</span>
+      ),
+    },
+    {
+      accessorKey: 'shipperStatus',
+      header: 'Trạng thái',
+      cell: ({ row }) => {
+        const status = row.original.shipperStatus || row.original.status || 'offline';
+        return (
+          <Badge variant={STATUS_VARIANT[status] || 'secondary'}>
+            {SHIPPER_STATUS_LABELS[status] || status}
+          </Badge>
+        );
+      },
+    },
+    {
       accessorKey: 'createdAt',
       header: 'Tham gia',
-      cell: ({ row }) => <span className="text-gray-500">{formatDate(row.original.createdAt)}</span>,
+      cell: ({ row }) => <span className="text-gray-500 text-xs">{formatDate(row.original.createdAt)}</span>,
     },
     {
       id: 'actions',

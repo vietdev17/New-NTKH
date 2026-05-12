@@ -91,7 +91,7 @@ const ProductVariantSchema = {
   available: { type: Boolean, default: true },
 };
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } })
 export class Product extends Document {
   @Prop({ required: true, trim: true })
   name: string;
@@ -117,6 +117,9 @@ export class Product extends Document {
 
   @Prop({ min: 0 })
   costPrice?: number;
+
+  @Prop({ min: 0 })
+  salePrice?: number;
 
   @Prop({ trim: true })
   brand?: string;
@@ -165,6 +168,9 @@ export class Product extends Document {
   })
   comboItems: ComboItem[];
 
+  @Prop({ default: 0, min: 0, max: 100 })
+  comboDiscountPercent?: number;
+
   @Prop({
     type: {
       title: { type: String },
@@ -188,6 +194,12 @@ export type ProductDocument = Product & Document;
 
 export const ProductSchema = SchemaFactory.createForClass(Product);
 
+// Virtual: stock = sum of all variant stocks
+ProductSchema.virtual('stock').get(function () {
+  if (!this.variants || this.variants.length === 0) return 0;
+  return this.variants.reduce((sum: number, v: any) => sum + (v.stock || 0), 0);
+});
+
 // Indexes
 ProductSchema.index(
   { name: 'text', shortDescription: 'text', description: 'text' },
@@ -204,3 +216,4 @@ ProductSchema.index({ 'variants.sku': 1 }, { unique: true, sparse: true });
 ProductSchema.index({ totalSold: -1 });
 ProductSchema.index({ viewCount: -1 });
 ProductSchema.index({ basePrice: 1 });
+ProductSchema.index({ salePrice: 1 });

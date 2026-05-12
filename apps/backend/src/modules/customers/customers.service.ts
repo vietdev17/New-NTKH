@@ -48,18 +48,41 @@ export class CustomersService {
     sort[sortBy] = sortOrder === 'asc' ? 1 : -1;
 
     const [items, total] = await Promise.all([
-      this.userModel
-        .find(filter)
-        .select('-password -refreshToken -resetPasswordToken')
-        .sort(sort)
-        .skip(skip)
-        .limit(limit)
-        .lean(),
+      this.userModel.aggregate([
+        { $match: filter },
+        {
+          $lookup: {
+            from: 'orders',
+            let: { customerId: '$_id' },
+            pipeline: [
+              {
+                $match: {
+                  $expr: { $eq: ['$customerId', '$$customerId'] },
+                  isDeleted: false,
+                  status: { $ne: 'cancelled' },
+                },
+              },
+              { $group: { _id: null, totalOrders: { $sum: 1 }, totalSpent: { $sum: '$total' } } },
+            ],
+            as: '_orderStats',
+          },
+        },
+        {
+          $addFields: {
+            totalOrders: { $ifNull: [{ $arrayElemAt: ['$_orderStats.totalOrders', 0] }, 0] },
+            totalSpent: { $ifNull: [{ $arrayElemAt: ['$_orderStats.totalSpent', 0] }, 0] },
+          },
+        },
+        { $project: { password: 0, refreshToken: 0, resetPasswordToken: 0, _orderStats: 0 } },
+        { $sort: sort },
+        { $skip: skip },
+        { $limit: limit },
+      ]),
       this.userModel.countDocuments(filter),
     ]);
 
     return {
-      items: items as UserDocument[],
+      items,
       total,
       page,
       limit,
