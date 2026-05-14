@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import {
   ArrowLeft, Phone, Mail, MapPin, Clock, Truck, Package,
-  TrendingUp, Banknote, CheckCircle2, Calendar, Bike, Car, Van,
+  TrendingUp, Banknote, CheckCircle2, Calendar, Bike, Car,
 } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
@@ -39,7 +39,7 @@ const VEHICLE_LABELS: Record<string, string> = {
 const VEHICLE_ICONS: Record<string, typeof Bike> = {
   motorcycle: Bike,
   car: Car,
-  van: Van,
+  van: Truck,
 };
 
 export default function AdminShipperDetailPage() {

@@ -39,7 +39,6 @@ export function ProductForm({ defaultValues, onSubmit, isLoading }: ProductFormP
 
   const normalizedDefaults = {
     images: [],
-    colors: [],
     dimensions: [],
     comboItems: [],
     comboDiscountPercent: 0,
