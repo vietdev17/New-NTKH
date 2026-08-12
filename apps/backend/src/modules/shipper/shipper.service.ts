@@ -153,7 +153,7 @@ export class ShipperService {
 
     // Cập nhật trạng thái shipper thành BUSY
     await this.userModel.findByIdAndUpdate(shipperId, {
-      shipperStatus: ShipperStatus.BUSY,
+      status: ShipperStatus.BUSY,
     });
 
     // Emit socket event cho admin
@@ -229,7 +229,7 @@ export class ShipperService {
 
     // Cập nhật shipper về AVAILABLE
     await this.userModel.findByIdAndUpdate(shipperId, {
-      shipperStatus: ShipperStatus.AVAILABLE,
+      status: ShipperStatus.AVAILABLE,
     });
 
     // Emit event để admin biết
@@ -292,7 +292,7 @@ export class ShipperService {
 
     // Cập nhật shipper về AVAILABLE
     await this.userModel.findByIdAndUpdate(shipperId, {
-      shipperStatus: ShipperStatus.AVAILABLE,
+      status: ShipperStatus.AVAILABLE,
     });
 
     // Emit socket event

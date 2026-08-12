@@ -143,10 +143,12 @@ export class Order extends Document {
   @Prop({ required: true, trim: true })
   shippingStreet: string;
 
-  @Prop({ required: true, trim: true })
+  // Don POS mua truc tiep tai cua hang khong co phuong/quan -> khong bat buoc.
+  // Don web van bat buoc qua class-validator o CreateOrderDto.
+  @Prop({ trim: true, default: '' })
   shippingWard: string;
 
-  @Prop({ required: true, trim: true })
+  @Prop({ trim: true, default: '' })
   shippingDistrict: string;
 
   @Prop({ required: true, trim: true })

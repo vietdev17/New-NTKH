@@ -284,7 +284,64 @@ export class AuthService {
       loyaltyPoints: user.loyaltyPoints,
       lastLoginAt: user.lastLoginAt,
       createdAt: (user as any).createdAt,
+      // Truong danh cho shipper (PWA hien trang thai + phuong tien)
+      status: user.status,
+      shipperStatus: user.status,
+      vehicleType: user.vehicleType,
+      licensePlate: user.licensePlate,
+      // Truong danh cho nhan vien
+      staffCode: user.staffCode,
     };
+  }
+
+  // ============================================================
+  // CAP NHAT HO SO CA NHAN (nguoi dung tu sua)
+  // ============================================================
+  async updateProfile(
+    userId: string,
+    dto: { fullName?: string; phone?: string; avatar?: string },
+  ) {
+    await this.usersService.update(userId, dto);
+    return this.getCurrentUser(userId);
+  }
+
+  // ============================================================
+  // DOI MAT KHAU (nguoi dung tu doi, can mat khau hien tai)
+  // ============================================================
+  async changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<{ message: string }> {
+    const user = await this.usersService.findByIdWithPassword(userId);
+    if (!user) {
+      throw new BusinessException(
+        'Nguoi dung khong ton tai',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    if (!user.password) {
+      throw new BusinessException(
+        'Tai khoan Google khong the doi mat khau tai day',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      throw new BusinessException(
+        'Mat khau hien tai khong chinh xac',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const salt = await bcrypt.genSalt(12);
+    const hashed = await bcrypt.hash(newPassword, salt);
+    await this.usersService.updatePassword(userId, hashed);
+
+    this.logger.log(`Password changed: ${user.email}`);
+    return { message: 'Doi mat khau thanh cong' };
   }
 
   // ============================================================

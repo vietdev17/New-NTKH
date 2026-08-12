@@ -844,6 +844,7 @@ export class OrdersService {
   async cancelOrder(
     orderId: string,
     userId: string,
+    userRole: UserRole,
     dto: CancelOrderDto,
   ): Promise<OrderDocument> {
     const session = await this.connection.startSession();
@@ -861,13 +862,30 @@ export class OrdersService {
         throw new NotFoundException('Khong tim thay don hang');
       }
 
-      if (
-        order.status === OrderStatus.DELIVERED ||
-        order.status === OrderStatus.CANCELLED
-      ) {
+      // Cac trang thai ket thuc: khong the huy nua.
+      // Thieu RETURNED/REFUNDED se lam ton kho duoc cong lai lan thu hai.
+      const finalStatuses: string[] = [
+        OrderStatus.DELIVERED,
+        OrderStatus.CANCELLED,
+        OrderStatus.RETURNED,
+        OrderStatus.REFUNDED,
+      ];
+      if (finalStatuses.includes(order.status)) {
         throw new BadRequestException(
-          'Khong the huy don da giao hoac da huy',
+          `Khong the huy don o trang thai "${order.status}"`,
         );
+      }
+
+      // Khach hang chi duoc huy DON CUA CHINH MINH va khi con PENDING
+      if (userRole === UserRole.CUSTOMER) {
+        if (order.customerId?.toString() !== userId) {
+          throw new ForbiddenException('Khong co quyen huy don nay');
+        }
+        if (order.status !== OrderStatus.PENDING) {
+          throw new ForbiddenException(
+            'Khach hang chi duoc huy don o trang thai cho xac nhan',
+          );
+        }
       }
 
       // Hoan lai ton kho
@@ -895,6 +913,13 @@ export class OrdersService {
 
       await order.save({ session });
       await session.commitTransaction();
+
+      // Tra lai luot su dung coupon (ton kho da duoc hoan o tren)
+      if (order.couponCode) {
+        await this.couponsService.releaseUsage(
+          (order._id as Types.ObjectId).toString(),
+        );
+      }
 
       // Emit event
       this.socketGateway.server.emit('order:statusUpdated', {

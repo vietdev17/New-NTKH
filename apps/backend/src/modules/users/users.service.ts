@@ -45,6 +45,20 @@ export class UsersService {
       .exec() as any;
   }
 
+  async findByIdWithPassword(id: string): Promise<UserDocument | null> {
+    if (!id || !Types.ObjectId.isValid(id)) return null;
+    return this.userModel
+      .findOne({ _id: id, isDeleted: false })
+      .select('+password')
+      .exec();
+  }
+
+  async updatePassword(id: string, hashedPassword: string): Promise<void> {
+    await this.userModel.findByIdAndUpdate(id, {
+      $set: { password: hashedPassword },
+    });
+  }
+
   async findByPhone(phone: string): Promise<UserDocument | null> {
     return this.userModel
       .findOne({ phone, isDeleted: false })

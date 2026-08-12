@@ -239,7 +239,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
         description="Bạn có chắc chắn muốn hủy đơn hàng này không? Hành động này không thể hoàn tác."
         confirmLabel="Hủy đơn hàng"
         onConfirm={() => {
-          cancelOrder.mutate({ id: o._id });
+          cancelOrder.mutate({ id: o._id, reason: 'Khách hàng hủy đơn' });
           setConfirmCancel(false);
         }}
         isLoading={cancelOrder.isPending}

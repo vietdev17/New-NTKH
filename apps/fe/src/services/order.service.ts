@@ -19,7 +19,7 @@ export const orderService = {
     return data;
   },
   cancelOrder: async (id: string, reason?: string): Promise<Order> => {
-    const { data } = await api.patch(`/orders/${id}/cancel`, { reason });
+    const { data } = await api.post(`/orders/${id}/cancel`, { reason });
     return data;
   },
   // Admin

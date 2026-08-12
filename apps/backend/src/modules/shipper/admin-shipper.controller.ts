@@ -55,14 +55,14 @@ export class AdminShipperController {
     const conditions: any = { role: UserRole.SHIPPER, isDeleted: false };
 
     if (status) {
-      conditions.shipperStatus = status;
+      conditions.status = status;
     }
 
     const [data, total] = await Promise.all([
       this.userModel
         .find(conditions)
         .select(
-          'fullName email phone avatar shipperStatus createdAt',
+          'fullName email phone avatar status createdAt',
         )
         .sort({ createdAt: -1 })
         .skip(skip)

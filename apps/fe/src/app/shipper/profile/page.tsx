@@ -84,7 +84,7 @@ export default function ShipperProfilePage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Biển số</span>
-                <span className="font-medium">{(user as any).vehiclePlate || '—'}</span>
+                <span className="font-medium">{(user as any).licensePlate || '—'}</span>
               </div>
             </div>
           </div>

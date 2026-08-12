@@ -26,7 +26,7 @@ export class ComparisonService {
     const products = await this.productModel
       .find({
         _id: { $in: uniqueIds.map((id) => new Types.ObjectId(id)) },
-        isActive: true,
+        isDeleted: false,
       })
       .populate('categoryId', 'name slug')
       .lean();

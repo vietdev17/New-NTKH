@@ -440,6 +440,19 @@ export class CouponsService {
     });
   }
 
+  // ===== TRA LAI LUOT SU DUNG KHI DON BI HUY =====
+  async releaseUsage(orderId: string): Promise<void> {
+    const usage = await this.couponUsageModel.findOneAndDelete({
+      orderId: new Types.ObjectId(orderId),
+    });
+
+    if (usage) {
+      await this.couponModel.findByIdAndUpdate(usage.couponId, {
+        $inc: { usedCount: -1 },
+      });
+    }
+  }
+
   // ===== THONG KE SU DUNG =====
   async getUsageStats(couponId: string) {
     const [totalUsage, uniqueUsers, totalDiscount, recentUsages] =

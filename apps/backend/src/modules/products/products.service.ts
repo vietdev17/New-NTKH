@@ -641,52 +641,40 @@ export class ProductsService {
   // GET LOW STOCK PRODUCTS - San pham sap het hang
   // ============================================================
   async getLowStockProducts(): Promise<ProductDocument[]> {
-    // Tim san pham co bat ky variant nao co stock <= minStock
-    const products = await this.productModel
-      .find({
-        isDeleted: false,
-        status: { $ne: ProductStatus.INACTIVE },
-        variants: {
-          $elemMatch: {
-            $expr: { $lte: ['$stock', '$minStock'] },
-          },
+    // So sanh 2 truong trong cung mot embedded doc ($stock vs $minStock) khong
+    // lam duoc bang $elemMatch + $expr, nen phai $unwind roi $match qua aggregation.
+    const result = await this.productModel.aggregate([
+      { $match: { isDeleted: false, status: { $ne: ProductStatus.INACTIVE } } },
+      { $unwind: '$variants' },
+      {
+        $match: {
+          $expr: { $lte: ['$variants.stock', '$variants.minStock'] },
         },
-      })
-      .populate('categoryId', 'name slug')
-      .lean();
-
-    // Fallback: neu $expr khong hoat dong voi embedded docs -> dung aggregation pipeline
-    if (products.length === 0) {
-      const result = await this.productModel.aggregate([
-        { $match: { isDeleted: false, status: { $ne: ProductStatus.INACTIVE } } },
-        { $unwind: '$variants' },
-        {
-          $match: {
-            $expr: { $lte: ['$variants.stock', '$variants.minStock'] },
-          },
-        },
-        {
-          $group: {
-            _id: '$_id',
-            name: { $first: '$name' },
-            slug: { $first: '$slug' },
-            categoryId: { $first: '$categoryId' },
-            lowStockVariants: {
-              $push: {
-                sku: '$variants.sku',
-                stock: '$variants.stock',
-                minStock: '$variants.minStock',
-              },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          name: { $first: '$name' },
+          slug: { $first: '$slug' },
+          categoryId: { $first: '$categoryId' },
+          lowStockVariants: {
+            $push: {
+              sku: '$variants.sku',
+              stock: '$variants.stock',
+              minStock: '$variants.minStock',
             },
           },
         },
-        { $sort: { name: 1 } },
-      ]);
+      },
+      { $sort: { name: 1 } },
+    ]);
 
-      return result as any;
-    }
+    await this.productModel.populate(result, {
+      path: 'categoryId',
+      select: 'name slug',
+    });
 
-    return products as unknown as ProductDocument[];
+    return result as any;
   }
 
   // ============================================================

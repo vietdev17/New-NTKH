@@ -230,6 +230,7 @@ export class OrdersController {
     const order = await this.ordersService.cancelOrder(
       id,
       req.user._id,
+      req.user.role,
       dto,
     );
     return {

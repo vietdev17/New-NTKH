@@ -3,11 +3,11 @@ import type { User, Address, QueryParams } from '@/types';
 
 export const userService = {
   updateProfile: async (payload: { fullName?: string; phone?: string; avatar?: string }): Promise<User> => {
-    const { data } = await api.patch('/users/profile', payload);
+    const { data } = await api.patch('/auth/profile', payload);
     return data;
   },
   changePassword: async (payload: { currentPassword: string; newPassword: string }): Promise<{ message: string }> => {
-    const { data } = await api.patch('/users/change-password', payload);
+    const { data } = await api.patch('/auth/change-password', payload);
     return data;
   },
   addAddress: async (address: Address): Promise<User> => {
@@ -107,14 +107,15 @@ export const userService = {
     return { data: response.data, meta: (response as any).meta };
   },
   createStaff: async (payload: any): Promise<User> => {
-    const { data } = await api.post('/users/staff', payload);
+    // Backend tao tai khoan qua POST /users (co role trong body), khong co /users/staff
+    const { data } = await api.post('/users', payload);
     return data;
   },
   updateStaff: async (id: string, payload: any): Promise<User> => {
-    const { data } = await api.patch(`/users/staff/${id}`, payload);
+    const { data } = await api.patch(`/users/${id}`, payload);
     return data;
   },
   deleteStaff: async (id: string): Promise<void> => {
-    await api.delete(`/users/staff/${id}`);
+    await api.delete(`/users/${id}`);
   },
 };
