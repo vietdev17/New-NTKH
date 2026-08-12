@@ -64,8 +64,8 @@ export const STORE = {
 
   // Hình ảnh mặc định cho OG/Social share
   ogImage: '/images/og-image.png',
-  logo: '/images/logo.svg',       // logo chính (màu nâu)
-  logoWhite: '/images/logo-white.svg', // logo cho nền tối
+  logo: '/images/logo.png',       // logo chính (PNG, nền trong suốt)
+  logoWhite: '/images/logo.png', // logo cho nền tối (dùng chung bản trong suốt)
 
   // Danh mục sản phẩm chính
   categories: [
